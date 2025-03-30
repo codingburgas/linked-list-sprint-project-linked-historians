@@ -6,10 +6,12 @@
     <ClCompile Include="authScreen.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menu.cpp" />
+    <ClCompile Include="searchAlgorithms.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="menu.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="event.h" />
+    <ClInclude Include="searchAlgorithms.h" />
   </ItemGroup>
 </Project>

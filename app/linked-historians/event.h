@@ -12,3 +12,4 @@ struct  EVENT {
 
 void addEvent(EVENT** head);
 void displayEvents(EVENT* head);
+void searchInEvent(EVENT* head, const std::string& searchKeyword);
