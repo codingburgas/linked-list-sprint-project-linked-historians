@@ -1,4 +1,7 @@
 #include "menu.h"
+#include "event.h"
+
+EVENT* head = nullptr;
 
 void displayOptions()
 {
@@ -21,8 +24,10 @@ void displayMenu()
 		switch (choice)
 		{
 		case '1':
+			addEvent(&head);
 			break;
 		case '2':
+			displayEvents(head);
 			break;
 		case '9':
 			break;
