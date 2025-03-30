@@ -119,3 +119,25 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
 			}
 		}
 	}
+
+	void fetchEvents(EVENT** head, int userId, sqlite3* db) {
+		std::ostringstream query;
+		query << "SELECT title, date, info FROM events WHERE user_id = " << userId << ";";
+	
+		sqlite3_stmt* stmt;
+		if (sqlite3_prepare_v2(db, query.str().c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+			std::cout << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+			return;
+		}
+	
+		while (sqlite3_step(stmt) == SQLITE_ROW) {
+			EVENT* newEvent = new EVENT();
+			newEvent->title = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+			newEvent->date = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+			newEvent->info = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+			newEvent->next = *head;
+			*head = newEvent;
+		}
+	
+		sqlite3_finalize(stmt);
+	}

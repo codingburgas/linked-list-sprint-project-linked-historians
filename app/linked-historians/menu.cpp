@@ -1,8 +1,6 @@
 #include "menu.h"
 #include "event.h"
 
-EVENT* head = nullptr;
-std::string s;
 void displayOptions()
 {
 	std::cout << "1. Add an event\n";
@@ -15,6 +13,10 @@ void displayMenu(int& id, Authentication& auth)
 {
 	system("cls");
 	char choice = ' ';
+
+	EVENT* head = nullptr;
+	std::string s;
+	fetchEvents(&head, id, auth.getDb());
 
 	while (choice != '9')
 	{
