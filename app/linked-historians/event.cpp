@@ -1,8 +1,13 @@
 #include "event.h"
 
-#include "pch.h"
 void addEvent(EVENT** head)
 {
+	static int count = 0;
+	if (count == 0)
+	{
+		std::cin.ignore();
+		count++;
+	}
 	std::string title, date, info;
 
 	std::cout << "Enter Title: ";
@@ -46,6 +51,7 @@ void addEvent(EVENT** head)
 				std::cout << "Info: " << list->info	 << std::endl;
 
 				list = list->next;
+				std::cout << "\n";
 			}
 		
 	}

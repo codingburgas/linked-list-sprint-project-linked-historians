@@ -135,6 +135,7 @@
     <ClCompile Include="menu.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="event.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>

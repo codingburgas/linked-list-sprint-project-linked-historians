@@ -2,7 +2,7 @@
 
 
 #include "pch.h"
- 
+
 struct  EVENT {
 	std::string title;
 	std::string date;
