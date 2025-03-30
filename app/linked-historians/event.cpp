@@ -38,7 +38,7 @@ void addEvent(EVENT** head)
 	{
 		
 			EVENT* list = head;
-
+			std::cout << "Available events: \n";
 			if (list == nullptr) {
 				std::cout << "No historical events recorded.\n";
 				return;
@@ -46,14 +46,27 @@ void addEvent(EVENT** head)
 
 			while (list != nullptr)
 			{
-				std::cout << "Title: " << list->title << std::endl;
-				std::cout << "Date: " << list->date << std::endl;
-				std::cout << "Info: " << list->info	 << std::endl;
+				std::cout << "- " << list->title << std::endl;
+				//std::cout << "Date: " << list->date << std::endl;
+				//std::cout << "Info: " << list->info	 << std::endl;
 
+				list = list->next;
+				
+			}
+			std::cout << "\nEnter the title of the event to view details: ";
+			std::string searchTitle;
+			std::getline(std::cin, searchTitle);
+			list = head;
+
+			while (list != nullptr)
+			{
+				if (list->title == searchTitle)
+				{
+					std::cout << "Info: " << list->info << "\n";
+				}
 				list = list->next;
 				std::cout << "\n";
 			}
-		
 	}
 
 	
