@@ -10,3 +10,5 @@
 #pragma comment(lib, "winsqlite3.lib")
 
 #include <sstream>
+
+#define WIN32_LEAN_AND_MEAN

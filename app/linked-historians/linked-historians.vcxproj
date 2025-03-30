@@ -128,14 +128,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="event.cpp" />
     <ClCompile Include="authentication.cpp" />
     <ClCompile Include="authScreen.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menu.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="authentication.h" />
-    <ClInclude Include="authScreen.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
