@@ -7,8 +7,9 @@ void displayOptions()
 	std::cout << "9. Exit\n";
 }
 
-void displayMenu()
+void displayMenu(int& id)
 {
+	system("cls");
 	char choice = ' ';
 
 	while (choice != '9')

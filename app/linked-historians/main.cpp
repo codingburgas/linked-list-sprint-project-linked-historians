@@ -1,6 +1,7 @@
-#include "menu.h"
+#include "authScreen.h"
 
 int main()
 {
-	displayMenu();
+	AuthScreen authScreen;
+	authScreen.displayAuthMenu();
 }

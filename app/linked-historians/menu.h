@@ -4,4 +4,4 @@
 
 void displayOptions();
 
-void displayMenu();
+void displayMenu(int& id);
