@@ -11,7 +11,7 @@ void displayOptions()
 	std::cout << "9. Exit\n";
 }
 
-void displayMenu(int& id)
+void displayMenu(int& id, Authentication& auth)
 {
 	system("cls");
 	char choice = ' ';
@@ -26,7 +26,7 @@ void displayMenu(int& id)
 		switch (choice)
 		{
 		case '1':
-			addEvent(&head);
+			addEvent(&head, id, auth.getDb());
 			break;
 		case '2':
 			displayEvents(head);

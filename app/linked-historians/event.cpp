@@ -1,38 +1,42 @@
 #include "event.h"
 #include "searchAlgorithms.h"
 
-void addEvent(EVENT** head)
-{
-	static int count = 0;
-	if (count == 0)
-	{
-		std::cin.ignore();
-		count++;
-	}
-	std::string title, date, info;
+void addEvent(EVENT** head, int& userId, sqlite3* db) {
+    static int count = 0;
+    if (count == 0) {
+        std::cin.ignore();
+        count++;
+    }
+    std::string title, date, info;
 
-	std::cout << "Enter Title: ";
-	std::getline(std::cin, title);
-	std::cout << "Enter Date: ";
-	std::getline(std::cin, date);
-	std::cout << "Enter Info: ";
-	std::getline(std::cin, info);
+    std::cout << "Enter Title: ";
+    std::getline(std::cin, title);
+    std::cout << "Enter Date: ";
+    std::getline(std::cin, date);
+    std::cout << "Enter Info: ";
+    std::getline(std::cin, info);
 
-	EVENT* newEvent = new EVENT{ title, date, info, nullptr };
+    std::ostringstream query;
+    query << "INSERT INTO events (user_id, title, date, info) VALUES ("
+          << userId << ", '" << title << "', '" << date << "', '" << info << "');";
 
-	if (*head == nullptr)
-	{
-		*head = newEvent;
-	}
-	else
-	{
-		EVENT* temp = *head;
-		while (temp->next != nullptr)
-		{
-			temp = temp->next;
-		}
-		temp->next = newEvent;
-	}
+    char* errMsg = nullptr;
+    if (sqlite3_exec(db, query.str().c_str(), nullptr, nullptr, &errMsg) != SQLITE_OK) {
+        std::cerr << "Error inserting event: " << errMsg << std::endl;
+        sqlite3_free(errMsg);
+        return;
+    }
+
+    EVENT* newEvent = new EVENT{ title, date, info, nullptr };
+    if (*head == nullptr) {
+        *head = newEvent;
+    } else {
+        EVENT* temp = *head;
+        while (temp->next != nullptr) {
+            temp = temp->next;
+        }
+        temp->next = newEvent;
+    }
 }
 	
 	void displayEvents(EVENT* head)

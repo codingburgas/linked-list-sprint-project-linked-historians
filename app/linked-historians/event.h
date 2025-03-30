@@ -10,6 +10,6 @@ struct  EVENT {
 	EVENT* next;
 };
 
-void addEvent(EVENT** head);
+void addEvent(EVENT** head, int& userId, sqlite3* db);
 void displayEvents(EVENT* head);
 void searchInEvent(EVENT* head, const std::string& searchKeyword);

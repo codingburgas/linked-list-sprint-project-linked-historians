@@ -1,7 +1,15 @@
 #include "authentication.h"
 
-Authentication::Authentication() {
-	std::string dbPath = "../data/database.db";
+Authentication::Authentication() : db(nullptr) {
+    std::string dbPath = "../data/database.db";
+    if (sqlite3_open(dbPath.c_str(), &db) != SQLITE_OK) {
+        std::cout << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
+        db = nullptr;
+    }
+}
+
+Authentication::Authentication(sqlite3* db) : db(db) {
+    std::string dbPath = "../data/database.db";
     if (sqlite3_open(dbPath.c_str(), &db) != SQLITE_OK) {
         std::cout << "Error opening database: " << sqlite3_errmsg(db) << std::endl;
         db = nullptr;
@@ -28,6 +36,18 @@ bool Authentication::createTable() {
         "id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "username TEXT UNIQUE NOT NULL, "
         "password TEXT NOT NULL);";
+    return executeQuery(query);
+}
+
+bool Authentication::createEventsTable()
+{
+    std::string query = "CREATE TABLE IF NOT EXISTS events ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "user_id INTEGER NOT NULL, "
+        "title TEXT NOT NULL, "
+        "date TEXT NOT NULL, "
+        "info TEXT NOT NULL, "
+        "FOREIGN KEY(user_id) REFERENCES accounts(id));";
     return executeQuery(query);
 }
 
@@ -64,3 +84,4 @@ bool Authentication::logIn(std::string& username, std::string& password, int& us
     sqlite3_finalize(stmt);
     return success;
 }
+

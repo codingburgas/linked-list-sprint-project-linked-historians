@@ -1,6 +1,6 @@
 #include "authScreen.h"
 AuthScreen::AuthScreen() {
-    if (!auth.createTable()) {
+    if (!auth.createTable() || !auth.createEventsTable()) {
         std::cerr << "Failed to initialize the database.\n";
     }
 }
@@ -27,7 +27,7 @@ void AuthScreen::displayAuthMenu() {
         default:
             break;
         }
-    } while (choice != 3);
+    } while (choice != '3');
 }
 
 void AuthScreen::handleSignUp() {
@@ -51,7 +51,7 @@ void AuthScreen::handleSignUp() {
     std::cout << '\n';
 
     if (auth.signUp(username, password, userId)) {
-        displayMenu(userId);
+        displayMenu(userId,auth);
     } else {
         std::cout << "Sign-up failed. Username is already taken.\n";
     }
@@ -78,7 +78,7 @@ void AuthScreen::handleLogIn() {
     std::cout << '\n';
 
     if (auth.logIn(username, password, userId)) {
-        displayMenu(userId);
+        displayMenu(userId, auth);
     } else {
         std::cout << "Login failed. Invalid username or password.\n";
     }
