@@ -2,6 +2,6 @@
 
 #include "pch.h"
 #include "authentication.h"
-void displayOptions();
+void displayOptions(int currentSelection);
 
 void displayMenu(int& id, Authentication& auth);

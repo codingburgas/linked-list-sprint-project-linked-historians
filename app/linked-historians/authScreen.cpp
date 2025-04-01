@@ -1,31 +1,47 @@
 #include "authScreen.h"
+#include "menu.h"
 AuthScreen::AuthScreen() {
     if (!auth.createTable() || !auth.createEventsTable()) {
         std::cerr << "Failed to initialize the database.\n";
     }
 }
+ void AuthScreen::displayLoginOptions(int currentSelection) {
+    system("cls");
+    std::cout << "Use UP/DOWN arrows to navigate, ENTER to select\n\n";
+
+    std::cout << (currentSelection == 0 ? "> " : "  ") << "1. Sign Up\n";
+    std::cout << (currentSelection == 1 ? "> " : "  ") << "2. Log In\n";
+    std::cout << (currentSelection == 2 ? "> " : "  ") << "3. Exit\n";
+}
+
+
 
 void AuthScreen::displayAuthMenu() {
-    char choice = ' ';
+    int choice;
+    int currentSelection = 0;
+
     do {
-        std::cout << "--- Authentication Menu ---\n";
-        std::cout << "1. Sign Up\n";
-        std::cout << "2. Log In\n";
-        std::cout << "3. Exit\n";
-        std::cout << "Enter your choice: ";
+        system("cls");
+        displayLoginOptions(currentSelection); 
         choice = _getch();
 
-        switch (choice) {
-        case '1':
-            handleSignUp();
-            break;
-        case '2':
-            handleLogIn();
-            break;
-        case '3':
-            break;
-        default:
-            break;
+        if (choice == 224) { 
+            choice = _getch();
+            switch (choice) {
+            case 72: 
+                if (currentSelection > 0) currentSelection--;
+                break;
+            case 80: 
+                if (currentSelection < 2) currentSelection++;
+                break;
+            }
+        }
+        else if (choice == 13) {
+            switch (currentSelection) {
+            case 0: handleSignUp(); break;
+            case 1: handleLogIn(); break;
+            case 2: return; 
+            }
         }
     } while (choice != '3');
 }

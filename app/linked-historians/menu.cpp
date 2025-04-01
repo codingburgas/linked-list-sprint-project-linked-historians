@@ -8,7 +8,7 @@ void displayOptions(int currentSelection) {
     std::cout << (currentSelection == 0 ? "> " : "  ") << "1. Add an event\n";
     std::cout << (currentSelection == 1 ? "> " : "  ") << "2. List all events\n";
     std::cout << (currentSelection == 2 ? "> " : "  ") << "3. Search a text in an event\n";
-    std::cout << (currentSelection == 3 ? "> " : "  ") << "9. Exit\n";
+    std::cout << (currentSelection == 3 ? "> " : "  ") << "9. Back to Login\n";
 }
 
 void displayMenu(int& id, Authentication& auth) {
