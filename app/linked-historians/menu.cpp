@@ -2,6 +2,7 @@
 #include "event.h"
 
 void displayOptions(int currentSelection) {
+    system("cls");
     std::cout << "Use up/down arrows to navigate, Enter to select, 9 to Exit\n\n";
 
     std::cout << (currentSelection == 0 ? "> " : "  ") << "1. Add an event\n";

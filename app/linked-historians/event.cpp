@@ -2,6 +2,11 @@
 #include "searchAlgorithms.h"
 #include "sortingAlgorithms.h" 
 
+static bool getValidInput(const std::string& prompt, std::string& input) {
+    std::cout << prompt;
+    std::getline(std::cin, input);
+    return !input.empty() && input.find_first_not_of(" \t\n\r") != std::string::npos;
+}
 
 void addEvent(EVENT** head, int& userId, sqlite3* db) {
     static int count = 0;
@@ -9,22 +14,20 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
         std::cin.ignore();
         count++;
     }
+
     std::string title, date, info;
 
-    std::cout << "Enter Title: ";
-    std::getline(std::cin, title);
-    std::cout << "Enter Date: ";
-    std::getline(std::cin, date);
-    std::cout << "Enter Info: ";
-    std::getline(std::cin, info);
+    while (!getValidInput("Enter Title: ", title)) std::cout << "Error: Title cannot be empty.\n";
+    while (!getValidInput("Enter Date: ", date)) std::cout << "Error: Date cannot be empty.\n";
+    while (!getValidInput("Enter Info: ", info)) std::cout << "Error: Info cannot be empty.\n";
 
     std::ostringstream query;
     query << "INSERT INTO events (user_id, title, date, info) VALUES ("
-          << userId << ", '" << title << "', '" << date << "', '" << info << "');";
+        << userId << ", '" << title << "', '" << date << "', '" << info << "');";
 
     char* errMsg = nullptr;
     if (sqlite3_exec(db, query.str().c_str(), nullptr, nullptr, &errMsg) != SQLITE_OK) {
-        std::cerr << "Error inserting event: " << errMsg << std::endl;
+        std::cout << "Error inserting event: " << errMsg << std::endl;
         sqlite3_free(errMsg);
         return;
     }
@@ -32,7 +35,8 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
     EVENT* newEvent = new EVENT{ title, date, info, nullptr };
     if (*head == nullptr) {
         *head = newEvent;
-    } else {
+    }
+    else {
         EVENT* temp = *head;
         while (temp->next != nullptr) {
             temp = temp->next;
@@ -100,6 +104,9 @@ void displayEvents(EVENT* head)
             curr = curr->next;
         }
     }
+    std::cout << "\nPress Enter to return to the main menu...";
+    std::cin.ignore();
+    std::cin.get();
 }
 
 void searchInEvent(EVENT* head, const std::string& searchKeyword)
