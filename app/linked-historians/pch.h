@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <conio.h>
+#include <cstdlib>
 #include <fstream>
 #include <windows.h>
 #define WIN32_LEAN_AND_MEAN
@@ -12,4 +13,3 @@
 
 #include <sstream>
 
-#define WIN32_LEAN_AND_MEAN

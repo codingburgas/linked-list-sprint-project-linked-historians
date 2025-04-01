@@ -45,68 +45,105 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
     }
 }
  
-void displayEvents(EVENT* head)
-{
-    EVENT* list = head;
+void showEventList(EVENT* head) {
     std::cout << "Available events:\n";
-    if (list == nullptr) {
+    if (head == nullptr) {
         std::cout << "No historical events recorded.\n";
-        return;
     }
-
-    while (list != nullptr)
-    {
-        std::cout << "- " << list->title << "\n";
-        list = list->next;
+    else {
+        EVENT* list = head;
+        while (list != nullptr) {
+            std::cout << "- " << list->title << "\n";
+            list = list->next;
+        }
     }
+}
 
-    std::cout << "\nEnter the name of the event to view details: ";
+void displayEventInfo(EVENT* head) {
+    system("cls");
     std::string searchTitle;
+    std::cout << "Enter the name of the event to view details: ";
     std::getline(std::cin, searchTitle);
-    list = head;
-    while (list != nullptr)
-    {
-        if (list->title == searchTitle)
-        {
-            std::cout << "Info: " << list->info << "\n";
+    EVENT* list = head;
+    bool found = false;
+    while (list != nullptr) {
+        if (list->title == searchTitle) {
+            std::cout << "\nInfo: " << list->info << "\n";
+            found = true;
             break;
         }
         list = list->next;
     }
+    if (!found)
+        std::cout << "\nEvent not found.\n";
 
-    char choice;
-    std::cout << "\nDo you want to display events sorted by title? (Y/N): ";
-    std::cin >> choice;
-    std::cin.ignore(); 
-
-    if (choice == 'Y' || choice == 'y')
-    {
-        EVENT* sortedHead = sortEventsByTitle(head);
-        std::cout << "\nSorted events:\n";
-        EVENT* curr = sortedHead;
-        while (curr != nullptr)
-        {
-            std::cout << "- " << curr->title << "\n";
-            curr = curr->next;
-        }
-        
-        std::cout << "\nEnter the name of the event to view details: ";
-        std::string sortedSearchTitle;
-        std::getline(std::cin, sortedSearchTitle);
-        curr = sortedHead;
-        while (curr != nullptr)
-        {
-            if (curr->title == sortedSearchTitle)
-            {
-                std::cout << "Info: " << curr->info << "\n";
-                break;
-            }
-            curr = curr->next;
-        }
-    }
-    std::cout << "\nPress Enter to return to the main menu...";
+    std::cout << "\nPress Enter to return to the submenu...";
     std::cin.ignore();
     std::cin.get();
+}
+
+void displaySortedEvents(EVENT* head) {
+    EVENT* sortedHead = sortEventsByTitle(head);
+    system("cls");
+    std::cout << "Sorted events:\n";
+    EVENT* curr = sortedHead;
+    while (curr != nullptr) {
+        std::cout << "- " << curr->title << "\n";
+        curr = curr->next;
+    }
+    std::cout << "\nPress Enter to return to the submenu...";
+    std::cin.ignore();
+    std::cin.get();
+}
+
+void displayEvents(EVENT* head)
+{
+    system("cls");
+    showEventList(head);
+    std::cout << "\nPress Enter to continue...";
+    std::cin.ignore();
+    std::cin.get();
+
+
+    int currentSelection = 0;
+    while (true)
+    {
+        system("cls");
+        showEventList(head);
+
+        std::cout << "\nUse up/down arrows to navigate, Enter to select\n\n";
+        std::cout << (currentSelection == 0 ? "> " : "  ") << "Display more info\n";
+        std::cout << (currentSelection == 1 ? "> " : "  ") << "Sort events\n";
+        std::cout << (currentSelection == 2 ? "> " : "  ") << "Go back to main menu\n";
+
+        int key = _getch();
+        if (key == 224) {  
+            key = _getch();
+            switch (key) {
+            case 72: 
+                if (currentSelection > 0)
+                    currentSelection--;
+                break;
+            case 80: 
+                if (currentSelection < 2)
+                    currentSelection++;
+                break;
+            default:
+                break;
+            }
+        }
+        else if (key == 13) { 
+            if (currentSelection == 0) {
+                displayEventInfo(head);
+            }
+            else if (currentSelection == 1) {
+                displaySortedEvents(head);
+            }
+            else if (currentSelection == 2) {
+                break;
+            }
+        }
+    }
 }
 
 void searchInEvent(EVENT* head, const std::string& searchKeyword)
