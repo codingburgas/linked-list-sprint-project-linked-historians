@@ -15,5 +15,7 @@
     <ClInclude Include="event.h" />
     <ClInclude Include="searchAlgorithms.h" />
     <ClInclude Include="sortingAlgorithms.h" />
+    <ClInclude Include="authentication.h" />
+    <ClInclude Include="authScreen.h" />
   </ItemGroup>
 </Project>

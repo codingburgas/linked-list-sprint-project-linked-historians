@@ -31,6 +31,14 @@ bool Authentication::executeQuery(const std::string& query) {
     return true;
 }
 
+bool Authentication::executePreparedStatement(const std::string& query, sqlite3_stmt** stmt) {
+    if (sqlite3_prepare_v2(db, query.c_str(), -1, stmt, nullptr) != SQLITE_OK) {
+        std::cout << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+        return false;
+    }
+    return true;
+}
+
 bool Authentication::createTable() {
     std::string query = "CREATE TABLE IF NOT EXISTS accounts ("
         "id INTEGER PRIMARY KEY AUTOINCREMENT, "
@@ -54,7 +62,7 @@ bool Authentication::createEventsTable()
 bool Authentication::signUp(std::string& username, std::string& password, int& userId) {
     std::ostringstream query;
     query << "INSERT INTO accounts (username, password) VALUES ('"
-          << username << "', '" << password << "');";
+        << username << "', '" << password << "');";
 
     if (!executeQuery(query.str())) {
         return false;
@@ -67,7 +75,7 @@ bool Authentication::signUp(std::string& username, std::string& password, int& u
 bool Authentication::logIn(std::string& username, std::string& password, int& userId) {
     std::ostringstream query;
     query << "SELECT id FROM accounts WHERE username='" << username
-          << "' AND password='" << password << "';";
+        << "' AND password='" << password << "';";
 
     sqlite3_stmt* stmt;
     if (sqlite3_prepare_v2(db, query.str().c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
@@ -77,7 +85,7 @@ bool Authentication::logIn(std::string& username, std::string& password, int& us
 
     bool success = false;
     if (sqlite3_step(stmt) == SQLITE_ROW) {
-        userId = sqlite3_column_int(stmt, 0); 
+        userId = sqlite3_column_int(stmt, 0);
         success = true;
     }
 
@@ -85,3 +93,49 @@ bool Authentication::logIn(std::string& username, std::string& password, int& us
     return success;
 }
 
+bool Authentication::addEvent(int userId, const std::string& title, const std::string& date, const std::string& info) {
+    std::ostringstream query;
+    query << "INSERT INTO events (user_id, title, date, info) VALUES ("
+        << userId << ", '" << title << "', '" << date << "', '" << info << "');";
+
+    return executeQuery(query.str());
+}
+
+bool Authentication::fetchEvents(int userId, EVENT** head) {
+    std::ostringstream query;
+    query << "SELECT title, date, info FROM events WHERE user_id = " << userId << ";";
+
+    sqlite3_stmt* stmt;
+    if (!executePreparedStatement(query.str(), &stmt)) {
+        return false;
+    }
+
+    while (sqlite3_step(stmt) == SQLITE_ROW) {
+        EVENT* newEvent = new EVENT();
+        newEvent->title = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+        newEvent->date = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        newEvent->info = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        newEvent->next = nullptr;
+
+        if (*head == nullptr) {
+            *head = newEvent;
+        }
+        else {
+            EVENT* temp = *head;
+            while (temp->next != nullptr) {
+                temp = temp->next;
+            }
+            temp->next = newEvent;
+        }
+    }
+
+    sqlite3_finalize(stmt);
+    return true;
+}
+
+bool Authentication::deleteEvent(int userId, const std::string& title) {
+    std::ostringstream query;
+    query << "DELETE FROM events WHERE user_id = " << userId << " AND title = '" << title << "';";
+
+    return executeQuery(query.str());
+}

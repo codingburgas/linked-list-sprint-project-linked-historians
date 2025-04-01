@@ -21,14 +21,10 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
     while (!getValidInput("Enter Date: ", date)) std::cout << "Error: Date cannot be empty.\n";
     while (!getValidInput("Enter Info: ", info)) std::cout << "Error: Info cannot be empty.\n";
 
-    std::ostringstream query;
-    query << "INSERT INTO events (user_id, title, date, info) VALUES ("
-        << userId << ", '" << title << "', '" << date << "', '" << info << "');";
-
-    char* errMsg = nullptr;
-    if (sqlite3_exec(db, query.str().c_str(), nullptr, nullptr, &errMsg) != SQLITE_OK) {
-        std::cout << "Error inserting event: " << errMsg << std::endl;
-        sqlite3_free(errMsg);
+    Authentication auth(db);
+    bool success = auth.addEvent(userId, title, date, info);
+    if (!success) {
+        std::cout << "Error inserting event into database.\n";
         return;
     }
 
@@ -43,8 +39,10 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
         }
         temp->next = newEvent;
     }
+
 }
- 
+
+
 void showEventList(EVENT* head) {
     std::cout << "Available events:\n";
     if (head == nullptr) {
@@ -96,14 +94,13 @@ void displaySortedEvents(EVENT* head) {
     std::cin.get();
 }
 
-void displayEvents(EVENT* head)
+void displayEvents(EVENT* head, int& userId, sqlite3* db)
 {
     system("cls");
     showEventList(head);
     std::cout << "\nPress Enter to continue...";
     std::cin.ignore();
     std::cin.get();
-
 
     int currentSelection = 0;
     while (true)
@@ -114,25 +111,26 @@ void displayEvents(EVENT* head)
         std::cout << "\nUse up/down arrows to navigate, Enter to select\n\n";
         std::cout << (currentSelection == 0 ? "> " : "  ") << "Display more info\n";
         std::cout << (currentSelection == 1 ? "> " : "  ") << "Sort events\n";
-        std::cout << (currentSelection == 2 ? "> " : "  ") << "Go back to main menu\n";
+        std::cout << (currentSelection == 2 ? "> " : "  ") << "Delete event\n";
+        std::cout << (currentSelection == 3 ? "> " : "  ") << "Go back to main menu\n";
 
         int key = _getch();
-        if (key == 224) {  
+        if (key == 224) {
             key = _getch();
             switch (key) {
-            case 72: 
+            case 72:
                 if (currentSelection > 0)
                     currentSelection--;
                 break;
-            case 80: 
-                if (currentSelection < 2)
+            case 80:
+                if (currentSelection < 3)
                     currentSelection++;
                 break;
             default:
                 break;
             }
         }
-        else if (key == 13) { 
+        else if (key == 13) {
             if (currentSelection == 0) {
                 displayEventInfo(head);
             }
@@ -140,6 +138,15 @@ void displayEvents(EVENT* head)
                 displaySortedEvents(head);
             }
             else if (currentSelection == 2) {
+                std::string title;
+                std::cout << "\nEnter the title of the event to delete: ";
+                std::getline(std::cin, title);
+                deleteEvent(&head, title, userId, db);
+                std::cout << "\nEvent deleted (if it existed).\nPress Enter to continue...";
+                std::cin.ignore();
+                std::cin.get();
+            }
+            else if (currentSelection == 3) {
                 break;
             }
         }
@@ -193,24 +200,26 @@ void searchInEvent(EVENT* head, const std::string& searchKeyword)
     }
 }
 
-void fetchEvents(EVENT** head, int userId, sqlite3* db) {
-    std::ostringstream query;
-    query << "SELECT title, date, info FROM events WHERE user_id = " << userId << ";";
-    
-    sqlite3_stmt* stmt;
-    if (sqlite3_prepare_v2(db, query.str().c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
-        std::cout << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
+void deleteEvent(EVENT** head, std::string& title, int userId, sqlite3* db) {
+    Authentication auth(db);
+    if (!auth.deleteEvent(userId, title)) {
+        std::cout << "Error deleting event from database.\n";
         return;
     }
-    
-    while (sqlite3_step(stmt) == SQLITE_ROW) {
-        EVENT* newEvent = new EVENT();
-        newEvent->title = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-        newEvent->date = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
-        newEvent->info = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-        newEvent->next = *head;
-        *head = newEvent;
+
+    EVENT* temp = *head;
+    EVENT* prev = nullptr;
+    if (temp != nullptr && temp->title == title) {
+        *head = temp->next;
+        delete temp;
+        return;
     }
-    
-    sqlite3_finalize(stmt);
+    while (temp != nullptr && temp->title != title) {
+        prev = temp;
+        temp = temp->next;
+    }
+    if (temp == nullptr)
+        return;
+    prev->next = temp->next;
+    delete temp;
 }

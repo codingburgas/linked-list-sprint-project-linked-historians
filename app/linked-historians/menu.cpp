@@ -15,7 +15,7 @@ void displayMenu(int& id, Authentication& auth) {
     system("cls");
     EVENT* head = nullptr;
     std::string s;
-    fetchEvents(&head, id, auth.getDb());
+    auth.fetchEvents(id,&head);
 
     int currentSelection = 0;
     while (true) {
@@ -36,7 +36,7 @@ void displayMenu(int& id, Authentication& auth) {
         else if (key == 13) { 
             switch (currentSelection) {
             case 0: addEvent(&head, id, auth.getDb()); break;
-            case 1: displayEvents(head); break;
+            case 1: displayEvents(head, id, auth.getDb()); break;
             case 2: searchInEvent(head, s); break;
             case 3: return;
             }

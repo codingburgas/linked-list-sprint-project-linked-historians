@@ -137,6 +137,8 @@
     <ClCompile Include="sortingAlgorithms.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="authentication.h" />
+    <ClInclude Include="authScreen.h" />
     <ClInclude Include="event.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="pch.h" />
