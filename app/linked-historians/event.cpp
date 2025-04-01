@@ -153,19 +153,18 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db)
     }
 }
 
-void searchInEvent(EVENT* head, const std::string& searchKeyword)
-{
+void searchInEvent(EVENT* head, const std::string& searchKeyword) {
     EVENT* list = head;
+    bool eventFound = false;
     bool keywordFound = false;
 
-    std::cout << "Available events:\n";
+    std::cout << "Available events: \n";
     if (list == nullptr) {
         std::cout << "No historical events recorded.\n";
         return;
     }
 
-    while (list != nullptr)
-    {
+    while (list != nullptr) {
         std::cout << "- " << list->title << "\n";
         list = list->next;
     }
@@ -175,10 +174,9 @@ void searchInEvent(EVENT* head, const std::string& searchKeyword)
     std::string eventTitle;
     std::getline(std::cin, eventTitle);
 
-    while (list != nullptr)
-    {
-        if (list->title == eventTitle)
-        {
+    while (list != nullptr) {
+        if (list->title == eventTitle) {
+            eventFound = true;
             std::cout << "\nEnter a keyword to search in the info: ";
             std::string keyword;
             std::getline(std::cin, keyword);
@@ -190,14 +188,24 @@ void searchInEvent(EVENT* head, const std::string& searchKeyword)
                 std::cout << "\n";
             }
 
+            if (!keywordFound) {
+                std::cout << "Keyword not found in the event's info.\n";
+                std::cin.get();
+            }
+            else
+            {
+                std::cin.get();
+            }
             break;
         }
         list = list->next;
 
-        if (!keywordFound) {
-            std::cout << "Keyword not found in the event's info.\n";
-        }
     }
+
+    if (!eventFound) {
+        std::cout << "Event not found.\n";
+    }
+
 }
 
 void deleteEvent(EVENT** head, std::string& title, int userId, sqlite3* db) {
