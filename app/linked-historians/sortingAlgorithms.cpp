@@ -44,3 +44,28 @@ static EVENT* mergeSort(EVENT* head) {
 EVENT* sortEventsByTitle(EVENT* head) {
     return mergeSort(head);
 }
+
+static EVENT* mergeSortedListsDescending(EVENT* l1, EVENT* l2) {
+    if (!l1) return l2;
+    if (!l2) return l1;
+
+    if (l1->title >= l2->title) { 
+        l1->next = mergeSortedListsDescending(l1->next, l2);
+        return l1;
+    }
+    else {
+        l2->next = mergeSortedListsDescending(l1, l2->next);
+        return l2;
+    }
+}
+
+EVENT* sortEventsByTitleDescending(EVENT* head) {
+    if (!head || !head->next) return head;
+
+    EVENT* a;
+    EVENT* b;
+    splitList(head, &a, &b);
+    a = sortEventsByTitleDescending(a);
+    b = sortEventsByTitleDescending(b);
+    return mergeSortedListsDescending(a, b);
+}

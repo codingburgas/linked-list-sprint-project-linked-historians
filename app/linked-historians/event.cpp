@@ -81,17 +81,45 @@ void displayEventInfo(EVENT* head) {
 }
 
 void displaySortedEvents(EVENT* head) {
-    EVENT* sortedHead = sortEventsByTitle(head);
     system("cls");
-    std::cout << "Sorted events:\n";
-    EVENT* curr = sortedHead;
-    while (curr != nullptr) {
-        std::cout << "- " << curr->title << "\n";
-        curr = curr->next;
+
+    int sortSelection = 0;
+    while (true) {
+        system("cls");
+        std::cout << "Choose sorting order:\n";
+        std::cout << (sortSelection == 0 ? "> " : "  ") << "Ascending\n";
+        std::cout << (sortSelection == 1 ? "> " : "  ") << "Descending\n";
+        std::cout << (sortSelection == 2 ? "> " : "  ") << "Go back\n";
+
+        int key = _getch();
+        if (key == 224) {
+            key = _getch();
+            switch (key) {
+            case 72: 
+                if (sortSelection > 0) sortSelection--;
+                break;
+            case 80: 
+                if (sortSelection < 2) sortSelection++;
+                break;
+            }
+        }
+        else if (key == 13) { 
+            if (sortSelection == 2) return;
+
+            EVENT* sortedHead = (sortSelection == 0) ? sortEventsByTitle(head) : sortEventsByTitleDescending(head);
+            system("cls");
+            std::cout << "Sorted events:\n";
+            EVENT* curr = sortedHead;
+            while (curr != nullptr) {
+                std::cout << "- " << curr->title << "\n";
+                curr = curr->next;
+            }
+            std::cout << "\nPress Enter to return...";
+            std::cin.ignore();
+            std::cin.get();
+            return;
+        }
     }
-    std::cout << "\nPress Enter to return to the submenu...";
-    std::cin.ignore();
-    std::cin.get();
 }
 
 void displayEvents(EVENT* head, int& userId, sqlite3* db)

@@ -3,3 +3,4 @@
 #include "event.h"
 
 EVENT* sortEventsByTitle(EVENT* head);
+EVENT* sortEventsByTitleDescending(EVENT* head);
