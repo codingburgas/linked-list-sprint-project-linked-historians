@@ -3,9 +3,25 @@
 #include "sortingAlgorithms.h" 
 
 static bool getValidInput(const std::string& prompt, std::string& input) {
-    std::cout << prompt;
-    std::getline(std::cin, input);
-    return !input.empty() && input.find_first_not_of(" \t\n\r") != std::string::npos;
+    std::cout << prompt << " (Press Enter twice to finish):\n";
+    input.clear();
+    std::string line;
+    bool lastLineEmpty = false;
+
+    while (true) {
+        std::getline(std::cin, line);
+        if (line.empty()) {
+            if (lastLineEmpty) break; 
+            lastLineEmpty = true;
+        }
+        else {
+            lastLineEmpty = false;
+            if (!input.empty()) input += "\n";
+            input += line;
+        }
+    }
+
+    return !input.empty();
 }
 
 void addEvent(EVENT** head, int& userId, sqlite3* db) {
@@ -17,9 +33,9 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
 
     std::string title, date, info;
 
-    while (!getValidInput("Enter Title: ", title)) std::cout << "Error: Title cannot be empty.\n";
-    while (!getValidInput("Enter Date: ", date)) std::cout << "Error: Date cannot be empty.\n";
-    while (!getValidInput("Enter Info: ", info)) std::cout << "Error: Info cannot be empty.\n";
+    while (!getValidInput("Enter Title", title)) std::cout << "Error: Title cannot be empty.\n";
+    while (!getValidInput("Enter Date", date)) std::cout << "Error: Date cannot be empty.\n";
+    while (!getValidInput("Enter Info", info)) std::cout << "Error: Info cannot be empty.\n";
 
     Authentication auth(db);
     bool success = auth.addEvent(userId, title, date, info);
@@ -39,7 +55,6 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
         }
         temp->next = newEvent;
     }
-
 }
 
 
