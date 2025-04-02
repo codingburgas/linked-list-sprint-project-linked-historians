@@ -104,9 +104,11 @@ void displaySortedEvents(EVENT* head) {
     while (true) {
         system("cls");
         std::cout << "Choose sorting order:\n";
-        std::cout << (sortSelection == 0 ? "> " : "  ") << "Ascending\n";
-        std::cout << (sortSelection == 1 ? "> " : "  ") << "Descending\n";
-        std::cout << (sortSelection == 2 ? "> " : "  ") << "Go back\n";
+        std::cout << (sortSelection == 0 ? "> " : "  ") << "Title (Ascending)\n";
+        std::cout << (sortSelection == 1 ? "> " : "  ") << "Title (Descending)\n";
+        std::cout << (sortSelection == 2 ? "> " : "  ") << "Date (Ascending)\n";
+        std::cout << (sortSelection == 3 ? "> " : "  ") << "Date (Descending)\n";
+        std::cout << (sortSelection == 4 ? "> " : "  ") << "Go back\n";
 
         int key = _getch();
         if (key == 224) {
@@ -116,19 +118,34 @@ void displaySortedEvents(EVENT* head) {
                 if (sortSelection > 0) sortSelection--;
                 break;
             case 80:
-                if (sortSelection < 2) sortSelection++;
+                if (sortSelection < 4) sortSelection++;
                 break;
             }
         }
         else if (key == 13) {
-            if (sortSelection == 2) return;
+            if (sortSelection == 4) return;
 
-            EVENT* sortedHead = (sortSelection == 0) ? sortEventsByTitle(head) : sortEventsByTitleDescending(head);
+            EVENT* sortedHead = nullptr;
+            switch (sortSelection) {
+            case 0:
+                sortedHead = sortEventsByTitle(head);
+                break;
+            case 1:
+                sortedHead = sortEventsByTitleDescending(head);
+                break;
+            case 2:
+                sortedHead = sortEventsByDate(head);
+                break;
+            case 3:
+                sortedHead = sortEventsByDateDescending(head);
+                break;
+            }
+
             system("cls");
             std::cout << "Sorted events:\n";
             EVENT* curr = sortedHead;
             while (curr != nullptr) {
-                std::cout << "- " << curr->title << "\n";
+                std::cout << "- " << curr->title << " (" << curr->dateDay << "/" << curr->dateMonth << "/" << curr->dateYear << ")\n";
                 curr = curr->next;
             }
             std::cout << "\nPress Enter to return...";

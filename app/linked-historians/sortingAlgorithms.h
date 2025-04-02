@@ -4,3 +4,5 @@
 
 EVENT* sortEventsByTitle(EVENT* head);
 EVENT* sortEventsByTitleDescending(EVENT* head);
+EVENT* sortEventsByDate(EVENT* head);
+EVENT* sortEventsByDateDescending(EVENT* head);
