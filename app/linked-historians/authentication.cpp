@@ -139,3 +139,14 @@ bool Authentication::deleteEvent(int userId, const std::string& title) {
 
     return executeQuery(query.str());
 }
+
+bool Authentication::updateEvent(int userId, const std::string& oldTitle, const std::string& newTitle, const std::string& newDate, const std::string& newInfo) {
+    std::ostringstream query;
+    query << "UPDATE events SET title = '" << newTitle
+        << "', date = '" << newDate
+        << "', info = '" << newInfo
+        << "' WHERE user_id = " << userId
+        << " AND title = '" << oldTitle << "';";
+
+    return executeQuery(query.str());
+}

@@ -19,6 +19,7 @@ public:
     bool addEvent(int userId, const std::string& title, const std::string& date, const std::string& info);
     bool fetchEvents(int userId, EVENT** head);
     bool deleteEvent(int userId, const std::string& title);
+    bool updateEvent(int userId, const std::string& oldTitle, const std::string& newTitle, const std::string& newDate, const std::string& newInfo);
 
     sqlite3* getDb() const { return db; }
 

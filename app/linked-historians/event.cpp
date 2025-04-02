@@ -154,8 +154,9 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db)
         std::cout << "\nUse up/down arrows to navigate, Enter to select\n\n";
         std::cout << (currentSelection == 0 ? "> " : "  ") << "Display more info\n";
         std::cout << (currentSelection == 1 ? "> " : "  ") << "Sort events\n";
-        std::cout << (currentSelection == 2 ? "> " : "  ") << "Delete event\n";
-        std::cout << (currentSelection == 3 ? "> " : "  ") << "Go back to main menu\n";
+        std::cout << (currentSelection == 2 ? "> " : "  ") << "Edit event\n";
+        std::cout << (currentSelection == 3 ? "> " : "  ") << "Delete event\n";
+        std::cout << (currentSelection == 4 ? "> " : "  ") << "Go back to main menu\n";
 
         int key = _getch();
         if (key == 224) {
@@ -166,7 +167,7 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db)
                     currentSelection--;
                 break;
             case 80:
-                if (currentSelection < 3)
+                if (currentSelection < 4)
                     currentSelection++;
                 break;
             default:
@@ -181,6 +182,12 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db)
                 displaySortedEvents(head);
             }
             else if (currentSelection == 2) {
+                editEvent(head, userId, db);
+                std::cout << "\nEvent edited (if it existed).\nPress Enter to continue...";
+                std::cin.ignore();
+                std::cin.get();
+            }
+            else if (currentSelection == 3) {
                 std::string title;
                 std::cout << "\nEnter the title of the event to delete: ";
                 std::getline(std::cin, title);
@@ -189,12 +196,13 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db)
                 std::cin.ignore();
                 std::cin.get();
             }
-            else if (currentSelection == 3) {
+            else if (currentSelection == 4) {
                 break;
             }
         }
     }
 }
+
 
 void searchInEvent(EVENT* head, const std::string& searchKeyword) {
     EVENT* list = head;
@@ -273,4 +281,44 @@ void deleteEvent(EVENT** head, std::string& title, int userId, sqlite3* db) {
         return;
     prev->next = temp->next;
     delete temp;
+}
+
+void editEvent(EVENT* head, int userId, sqlite3* db) {
+    std::cout << "Enter the title of the event you want to edit: ";
+    std::string title;
+    std::getline(std::cin, title);
+    Authentication auth(db);
+    EVENT* event = head;
+    while (event != nullptr) {
+        if (event->title == title) {
+            std::string newTitle, newDate, newInfo;
+
+            std::cout << "Enter new title (leave empty to keep current): ";
+            std::getline(std::cin, newTitle);
+            if (newTitle.empty()) newTitle = event->title;
+
+            std::cout << "Enter new date (leave empty to keep current): ";
+            std::getline(std::cin, newDate);
+            if (newDate.empty()) newDate = event->date;
+
+            std::cout << "Enter new info (leave empty to keep current): ";
+            std::getline(std::cin, newInfo);
+            if (newInfo.empty()) newInfo = event->info;
+
+            Authentication auth(db);
+            if (auth.updateEvent(userId, event->title, newTitle, newDate, newInfo)) {
+                event->title = newTitle;
+                event->date = newDate;
+                event->info = newInfo;
+                std::cout << "Event updated successfully.\n";
+            }
+            else {
+                std::cout << "Error updating event in database.\n";
+            }
+            return;
+        }
+        event = event->next;
+    }
+
+    std::cout << "Event not found.\n";
 }
