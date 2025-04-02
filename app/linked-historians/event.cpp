@@ -1,6 +1,6 @@
 #include "event.h"
 #include "searchAlgorithms.h"
-#include "sortingAlgorithms.h" 
+#include "sortingAlgorithms.h"
 
 static bool getValidInput(const std::string& prompt, std::string& input) {
     std::cout << prompt << " (Press Enter twice to finish):\n";
@@ -11,7 +11,7 @@ static bool getValidInput(const std::string& prompt, std::string& input) {
     while (true) {
         std::getline(std::cin, line);
         if (line.empty()) {
-            if (lastLineEmpty) break; 
+            if (lastLineEmpty) break;
             lastLineEmpty = true;
         }
         else {
@@ -34,7 +34,7 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
     std::string title, date, info;
 
     while (!getValidInput("Enter Title", title)) std::cout << "Error: Title cannot be empty.\n";
-    while (!getValidInput("Enter Date", date)) std::cout << "Error: Date cannot be empty.\n";
+    while (!getValidInput("Enter Date (DD/MM/YYYY)", date)) std::cout << "Error: Date cannot be empty.\n";
     while (!getValidInput("Enter Info", info)) std::cout << "Error: Info cannot be empty.\n";
 
     Authentication auth(db);
@@ -44,7 +44,9 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
         return;
     }
 
-    EVENT* newEvent = new EVENT{ title, date, info, nullptr };
+    EVENT* newEvent = new EVENT{ title, 0, 0, 0, info, nullptr };
+    formatDate(date, newEvent);
+
     if (*head == nullptr) {
         *head = newEvent;
     }
@@ -56,7 +58,6 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
         temp->next = newEvent;
     }
 }
-
 
 void showEventList(EVENT* head) {
     std::cout << "Available events:\n";
@@ -81,7 +82,8 @@ void displayEventInfo(EVENT* head) {
     bool found = false;
     while (list != nullptr) {
         if (list->title == searchTitle) {
-            std::cout << "\nInfo: " << list->info << "\n";
+            std::cout << "\nDate: " << list->dateDay << "/" << list->dateMonth << "/" << list->dateYear << "\n";
+            std::cout << "Info: " << list->info << "\n";
             found = true;
             break;
         }
@@ -110,15 +112,15 @@ void displaySortedEvents(EVENT* head) {
         if (key == 224) {
             key = _getch();
             switch (key) {
-            case 72: 
+            case 72:
                 if (sortSelection > 0) sortSelection--;
                 break;
-            case 80: 
+            case 80:
                 if (sortSelection < 2) sortSelection++;
                 break;
             }
         }
-        else if (key == 13) { 
+        else if (key == 13) {
             if (sortSelection == 2) return;
 
             EVENT* sortedHead = (sortSelection == 0) ? sortEventsByTitle(head) : sortEventsByTitleDescending(head);
@@ -137,8 +139,7 @@ void displaySortedEvents(EVENT* head) {
     }
 }
 
-void displayEvents(EVENT* head, int& userId, sqlite3* db)
-{
+void displayEvents(EVENT* head, int& userId, sqlite3* db) {
     system("cls");
     showEventList(head);
     std::cout << "\nPress Enter to continue...";
@@ -146,8 +147,7 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db)
     std::cin.get();
 
     int currentSelection = 0;
-    while (true)
-    {
+    while (true) {
         system("cls");
         showEventList(head);
 
@@ -203,62 +203,6 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db)
     }
 }
 
-
-void searchInEvent(EVENT* head, const std::string& searchKeyword) {
-    EVENT* list = head;
-    bool eventFound = false;
-    bool keywordFound = false;
-
-    std::cout << "Available events: \n";
-    if (list == nullptr) {
-        std::cout << "No historical events recorded.\n";
-        return;
-    }
-
-    while (list != nullptr) {
-        std::cout << "- " << list->title << "\n";
-        list = list->next;
-    }
-
-    list = head;
-    std::cout << "\nEnter the name of the event to view details: ";
-    std::string eventTitle;
-    std::getline(std::cin, eventTitle);
-
-    while (list != nullptr) {
-        if (list->title == eventTitle) {
-            eventFound = true;
-            std::cout << "\nEnter a keyword to search in the info: ";
-            std::string keyword;
-            std::getline(std::cin, keyword);
-
-            if (containsSubstring(list->info, keyword)) {
-                std::cout << "Keyword found in the event info!\n";
-                std::cout << "Info: " << list->info << "\n";
-                keywordFound = true;
-                std::cout << "\n";
-            }
-
-            if (!keywordFound) {
-                std::cout << "Keyword not found in the event's info.\n";
-                std::cin.get();
-            }
-            else
-            {
-                std::cin.get();
-            }
-            break;
-        }
-        list = list->next;
-
-    }
-
-    if (!eventFound) {
-        std::cout << "Event not found.\n";
-    }
-
-}
-
 void deleteEvent(EVENT** head, std::string& title, int userId, sqlite3* db) {
     Authentication auth(db);
     if (!auth.deleteEvent(userId, title)) {
@@ -299,16 +243,17 @@ void editEvent(EVENT* head, int userId, sqlite3* db) {
 
             std::cout << "Enter new date (leave empty to keep current): ";
             std::getline(std::cin, newDate);
-            if (newDate.empty()) newDate = event->date;
+            if (newDate.empty()) {
+                newDate = std::to_string(event->dateDay) + "/" + std::to_string(event->dateMonth) + "/" + std::to_string(event->dateYear);
+            }
 
             std::cout << "Enter new info (leave empty to keep current): ";
             std::getline(std::cin, newInfo);
             if (newInfo.empty()) newInfo = event->info;
 
-            Authentication auth(db);
             if (auth.updateEvent(userId, event->title, newTitle, newDate, newInfo)) {
                 event->title = newTitle;
-                event->date = newDate;
+                formatDate(newDate, event);
                 event->info = newInfo;
                 std::cout << "Event updated successfully.\n";
             }

@@ -28,3 +28,5 @@ private:
     bool executeQuery(const std::string& query);
     bool executePreparedStatement(const std::string& query, sqlite3_stmt** stmt);
 };
+
+void formatDate(const std::string& dateStr, EVENT* event);

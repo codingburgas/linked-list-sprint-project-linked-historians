@@ -5,7 +5,9 @@
 
 struct  EVENT {
 	std::string title;
-	std::string date;
+	int dateDay;
+	int dateMonth;
+	int dateYear;
 	std::string info;
 	EVENT* next;
 };
@@ -16,6 +18,5 @@ void displayEventInfo(EVENT* head);
 void displaySortedEvents(EVENT* head);
 void displayEvents(EVENT* head, int& userId, sqlite3* db);
 
-void searchInEvent(EVENT* head, const std::string& searchKeyword);
 void deleteEvent(EVENT** head, std::string& title, int userId, sqlite3* db);
 void editEvent(EVENT* head, int userId, sqlite3* db);

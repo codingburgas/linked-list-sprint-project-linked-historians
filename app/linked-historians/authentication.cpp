@@ -47,8 +47,7 @@ bool Authentication::createTable() {
     return executeQuery(query);
 }
 
-bool Authentication::createEventsTable()
-{
+bool Authentication::createEventsTable() {
     std::string query = "CREATE TABLE IF NOT EXISTS events ("
         "id INTEGER PRIMARY KEY AUTOINCREMENT, "
         "user_id INTEGER NOT NULL, "
@@ -113,7 +112,8 @@ bool Authentication::fetchEvents(int userId, EVENT** head) {
     while (sqlite3_step(stmt) == SQLITE_ROW) {
         EVENT* newEvent = new EVENT();
         newEvent->title = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
-        newEvent->date = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        std::string dateStr = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+        formatDate(dateStr, newEvent);
         newEvent->info = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
         newEvent->next = nullptr;
 
@@ -149,4 +149,21 @@ bool Authentication::updateEvent(int userId, const std::string& oldTitle, const 
         << " AND title = '" << oldTitle << "';";
 
     return executeQuery(query.str());
+}
+
+void formatDate(const std::string& dateStr, EVENT* event) {
+    if (!event) return;
+
+    std::stringstream ss(dateStr);
+    char delimiter;
+    int day, month, year;
+
+    if (ss >> day >> delimiter >> month >> delimiter >> year) {
+		event->dateDay = day;
+		event->dateMonth = month;
+		event->dateYear = year;
+    }
+    else {
+        std::cout << "Invalid date format: " << dateStr << std::endl;
+    }
 }

@@ -1,6 +1,6 @@
 #include "menu.h"
 #include "event.h"
-
+#include "searchAlgorithms.h"
 void displayOptions(int currentSelection) {
     system("cls");
     std::cout << "Use up/down arrows to navigate, Enter to select, 9 to Exit\n\n";
