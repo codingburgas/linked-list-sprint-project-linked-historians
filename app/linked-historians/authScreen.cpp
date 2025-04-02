@@ -5,6 +5,14 @@ AuthScreen::AuthScreen() {
         std::cerr << "Failed to initialize the database.\n";
     }
 }
+
+void changeColor()
+{
+    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+    SetConsoleTextAttribute(h, 11);
+
+}
+
  void AuthScreen::displayLoginOptions(int currentSelection) {
     system("cls");
     std::cout << "Use UP/DOWN arrows to navigate, ENTER to select\n\n";
@@ -22,6 +30,7 @@ void AuthScreen::displayAuthMenu() {
 
     do {
         system("cls");
+        changeColor();
         displayLoginOptions(currentSelection); 
         choice = _getch();
 
