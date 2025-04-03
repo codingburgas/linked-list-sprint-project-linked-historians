@@ -131,6 +131,7 @@
     <ClCompile Include="event.cpp" />
     <ClCompile Include="authentication.cpp" />
     <ClCompile Include="authScreen.cpp" />
+    <ClCompile Include="input.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="searchAlgorithms.cpp" />
@@ -140,6 +141,7 @@
     <ClInclude Include="authentication.h" />
     <ClInclude Include="authScreen.h" />
     <ClInclude Include="event.h" />
+    <ClInclude Include="input.h" />
     <ClInclude Include="menu.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="searchAlgorithms.h" />

@@ -8,6 +8,7 @@
     <ClCompile Include="menu.cpp" />
     <ClCompile Include="searchAlgorithms.cpp" />
     <ClCompile Include="sortingAlgorithms.cpp" />
+    <ClCompile Include="input.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="menu.h" />
@@ -17,5 +18,6 @@
     <ClInclude Include="sortingAlgorithms.h" />
     <ClInclude Include="authentication.h" />
     <ClInclude Include="authScreen.h" />
+    <ClInclude Include="input.h" />
   </ItemGroup>
 </Project>

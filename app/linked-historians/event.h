@@ -2,6 +2,7 @@
 
 #include "pch.h"
 #include "authentication.h"
+#include "input.h";
 
 struct  EVENT {
 	std::string title;
@@ -11,7 +12,7 @@ struct  EVENT {
 	std::string info;
 	EVENT* next;
 };
-
+void addEventToFront(EVENT** head, EVENT* newEvent);
 void addEvent(EVENT** head, int& userId, sqlite3* db);
 
 void displayEventInfo(EVENT* head);

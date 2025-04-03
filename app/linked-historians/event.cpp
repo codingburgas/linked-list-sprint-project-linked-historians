@@ -2,26 +2,9 @@
 #include "searchAlgorithms.h"
 #include "sortingAlgorithms.h"
 
-static bool getValidInput(const std::string& prompt, std::string& input) {
-    std::cout << prompt << " (Press Enter twice to finish):\n";
-    input.clear();
-    std::string line;
-    bool lastLineEmpty = false;
-
-    while (true) {
-        std::getline(std::cin, line);
-        if (line.empty()) {
-            if (lastLineEmpty) break;
-            lastLineEmpty = true;
-        }
-        else {
-            lastLineEmpty = false;
-            if (!input.empty()) input += "\n";
-            input += line;
-        }
-    }
-
-    return !input.empty();
+void addEventToFront(EVENT** head, EVENT* newEvent) {
+    newEvent->next = *head;
+    *head = newEvent;
 }
 
 void addEvent(EVENT** head, int& userId, sqlite3* db) {
@@ -47,17 +30,9 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
     EVENT* newEvent = new EVENT{ title, 0, 0, 0, info, nullptr };
     formatDate(date, newEvent);
 
-    if (*head == nullptr) {
-        *head = newEvent;
-    }
-    else {
-        EVENT* temp = *head;
-        while (temp->next != nullptr) {
-            temp = temp->next;
-        }
-        temp->next = newEvent;
-    }
+    addEventToFront(head, newEvent);
 }
+
 
 void showEventList(EVENT* head) {
     std::cout << "Available events:\n";
