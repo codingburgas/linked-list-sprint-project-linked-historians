@@ -14,25 +14,40 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
         count++;
     }
 
-    std::string title, date, info;
+    std::string title, date, info, type;
 
-    while (!getValidInput("Enter Title", title)) std::cout << "Error: Title cannot be empty.\n";
-    while (!getValidInput("Enter Date (DD/MM/YYYY)", date)) std::cout << "Error: Date cannot be empty.\n";
-    while (!getValidInput("Enter Info", info)) std::cout << "Error: Info cannot be empty.\n";
+    while (!getValidInput("Enter Title", title))
+        std::cout << "Error: Title cannot be empty.\n";
+    while (!getValidInput("Enter Date (DD/MM/YYYY)", date))
+        std::cout << "Error: Date cannot be empty.\n";
+    while (!getValidInput("Enter Info", info))
+        std::cout << "Error: Info cannot be empty.\n";
+
+    // Prompt for type with validation
+    bool validType = false;
+    while (!validType) {
+        while (!getValidInput("Enter Type (War or Revolution)", type))
+            std::cout << "Error: Type cannot be empty.\n";
+        if (type == "War" || type == "Revolution") {
+            validType = true;
+        }
+        else {
+            std::cout << "Error: Type must be either 'War' or 'Revolution'.\n";
+        }
+    }
 
     Authentication auth(db);
-    bool success = auth.addEvent(userId, title, date, info);
+    bool success = auth.addEvent(userId, title, date, info, type);
     if (!success) {
         std::cout << "Error inserting event into database.\n";
         return;
     }
 
-    EVENT* newEvent = new EVENT{ title, 0, 0, 0, info, nullptr };
+    EVENT* newEvent = new EVENT{ title, 0, 0, 0, info, nullptr, type };
     formatDate(date, newEvent);
 
     addEventToFront(head, newEvent);
 }
-
 
 void showEventList(EVENT* head) {
     std::cout << "Available events:\n";
@@ -57,8 +72,10 @@ void displayEventInfo(EVENT* head) {
     bool found = false;
     while (list != nullptr) {
         if (list->title == searchTitle) {
-            std::cout << "\nDate: " << list->dateDay << "/" << list->dateMonth << "/" << list->dateYear << "\n";
+            std::cout << "\nDate: " << list->dateDay << "/"
+                << list->dateMonth << "/" << list->dateYear << "\n";
             std::cout << "Info: " << list->info << "\n";
+            std::cout << "Type: " << list->type << "\n";
             found = true;
             break;
         }
@@ -227,26 +244,49 @@ void editEvent(EVENT* head, int userId, sqlite3* db) {
     EVENT* event = head;
     while (event != nullptr) {
         if (event->title == title) {
-            std::string newTitle, newDate, newInfo;
+            std::string newTitle, newDate, newInfo, newType;
 
             std::cout << "Enter new title (leave empty to keep current): ";
             std::getline(std::cin, newTitle);
-            if (newTitle.empty()) newTitle = event->title;
+            if (newTitle.empty()) {
+                newTitle = event->title;
+            }
 
             std::cout << "Enter new date (leave empty to keep current): ";
             std::getline(std::cin, newDate);
             if (newDate.empty()) {
-                newDate = std::to_string(event->dateDay) + "/" + std::to_string(event->dateMonth) + "/" + std::to_string(event->dateYear);
+                newDate = std::to_string(event->dateDay) + "/" +
+                    std::to_string(event->dateMonth) + "/" +
+                    std::to_string(event->dateYear);
             }
 
             std::cout << "Enter new info (leave empty to keep current): ";
             std::getline(std::cin, newInfo);
-            if (newInfo.empty()) newInfo = event->info;
+            if (newInfo.empty()) {
+                newInfo = event->info;
+            }
 
-            if (auth.updateEvent(userId, event->title, newTitle, newDate, newInfo)) {
+            bool validType = false;
+            while (!validType) {
+                std::cout << "Enter new type (War or Revolution, leave empty to keep current): ";
+                std::getline(std::cin, newType);
+                if (newType.empty()) {
+                    newType = event->type;
+                    validType = true;
+                }
+                else if (newType == "War" || newType == "Revolution") {
+                    validType = true;
+                }
+                else {
+                    std::cout << "Invalid type. Please enter 'War' or 'Revolution'.\n";
+                }
+            }
+
+            if (auth.updateEvent(userId, event->title, newTitle, newDate, newInfo, newType)) {
                 event->title = newTitle;
                 formatDate(newDate, event);
                 event->info = newInfo;
+                event->type = newType;
                 std::cout << "Event updated successfully.\n";
             }
             else {

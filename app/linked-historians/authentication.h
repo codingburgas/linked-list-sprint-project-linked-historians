@@ -16,10 +16,13 @@ public:
     bool signUp(std::string& username, std::string& password, int& userId);
     bool logIn(std::string& username, std::string& password, int& userId);
 
-    bool addEvent(int userId, const std::string& title, const std::string& date, const std::string& info);
+    bool addEvent(int userId, const std::string& title, const std::string& date,
+        const std::string& info, const std::string& type);
     bool fetchEvents(int userId, EVENT** head);
     bool deleteEvent(int userId, const std::string& title);
-    bool updateEvent(int userId, const std::string& oldTitle, const std::string& newTitle, const std::string& newDate, const std::string& newInfo);
+    bool updateEvent(int userId, const std::string& oldTitle,
+        const std::string& newTitle, const std::string& newDate,
+        const std::string& newInfo, const std::string& newType);
 
     sqlite3* getDb() const { return db; }
 

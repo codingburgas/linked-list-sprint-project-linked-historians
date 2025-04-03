@@ -11,7 +11,9 @@ struct  EVENT {
 	int dateYear;
 	std::string info;
 	EVENT* next;
+	std::string type;
 };
+
 void addEventToFront(EVENT** head, EVENT* newEvent);
 void addEvent(EVENT** head, int& userId, sqlite3* db);
 

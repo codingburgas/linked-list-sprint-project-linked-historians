@@ -54,6 +54,7 @@ bool Authentication::createEventsTable() {
         "title TEXT NOT NULL, "
         "date TEXT NOT NULL, "
         "info TEXT NOT NULL, "
+        "type TEXT NOT NULL, "  
         "FOREIGN KEY(user_id) REFERENCES accounts(id));";
     return executeQuery(query);
 }
@@ -92,17 +93,18 @@ bool Authentication::logIn(std::string& username, std::string& password, int& us
     return success;
 }
 
-bool Authentication::addEvent(int userId, const std::string& title, const std::string& date, const std::string& info) {
+bool Authentication::addEvent(int userId, const std::string& title, const std::string& date,
+    const std::string& info, const std::string& type) {
     std::ostringstream query;
-    query << "INSERT INTO events (user_id, title, date, info) VALUES ("
-        << userId << ", '" << title << "', '" << date << "', '" << info << "');";
+    query << "INSERT INTO events (user_id, title, date, info, type) VALUES ("
+        << userId << ", '" << title << "', '" << date << "', '" << info << "', '" << type << "');";
 
     return executeQuery(query.str());
 }
 
 bool Authentication::fetchEvents(int userId, EVENT** head) {
     std::ostringstream query;
-    query << "SELECT title, date, info FROM events WHERE user_id = " << userId << ";";
+    query << "SELECT title, date, info, type FROM events WHERE user_id = " << userId << ";";
 
     sqlite3_stmt* stmt;
     if (!executePreparedStatement(query.str(), &stmt)) {
@@ -115,6 +117,7 @@ bool Authentication::fetchEvents(int userId, EVENT** head) {
         std::string dateStr = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
         formatDate(dateStr, newEvent);
         newEvent->info = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+        newEvent->type = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)); 
         newEvent->next = nullptr;
 
         if (*head == nullptr) {
@@ -140,17 +143,19 @@ bool Authentication::deleteEvent(int userId, const std::string& title) {
     return executeQuery(query.str());
 }
 
-bool Authentication::updateEvent(int userId, const std::string& oldTitle, const std::string& newTitle, const std::string& newDate, const std::string& newInfo) {
+bool Authentication::updateEvent(int userId, const std::string& oldTitle,
+    const std::string& newTitle, const std::string& newDate,
+    const std::string& newInfo, const std::string& newType) {
     std::ostringstream query;
     query << "UPDATE events SET title = '" << newTitle
         << "', date = '" << newDate
         << "', info = '" << newInfo
+        << "', type = '" << newType  
         << "' WHERE user_id = " << userId
         << " AND title = '" << oldTitle << "';";
 
     return executeQuery(query.str());
 }
-
 void formatDate(const std::string& dateStr, EVENT* event) {
     if (!event) return;
 
