@@ -21,3 +21,4 @@ bool getValidInput(const std::string& prompt, std::string& input) {
 
     return !input.empty();
 }
+

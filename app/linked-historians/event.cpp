@@ -23,7 +23,6 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
     while (!getValidInput("Enter Info", info))
         std::cout << "Error: Info cannot be empty.\n";
 
-    // Prompt for type with validation
     bool validType = false;
     while (!validType) {
         while (!getValidInput("Enter Type (War or Revolution)", type))
@@ -100,7 +99,7 @@ void displayEventInfo(EVENT* head, const std::string& filter) {
     std::cin.get();
 }
 
-void displaySortedEvents(EVENT* head, const std::string& filter) {
+void displaySortedEvents(EVENT*& head, const std::string& filter) {
     system("cls");
 
     int sortSelection = 0;
@@ -117,31 +116,18 @@ void displaySortedEvents(EVENT* head, const std::string& filter) {
         if (key == 224) {
             key = _getch();
             switch (key) {
-            case 72:
-                if (sortSelection > 0) sortSelection--;
-                break;
-            case 80:
-                if (sortSelection < 4) sortSelection++;
-                break;
+            case 72: if (sortSelection > 0) sortSelection--; break;
+            case 80: if (sortSelection < 4) sortSelection++; break;
             }
         }
         else if (key == 13) {
             if (sortSelection == 4) return;
 
-            EVENT* sortedHead = nullptr;
             switch (sortSelection) {
-            case 0:
-                sortedHead = sortEventsByTitle(head);
-                break;
-            case 1:
-                sortedHead = sortEventsByTitleDescending(head);
-                break;
-            case 2:
-                sortedHead = sortEventsByDate(head);
-                break;
-            case 3:
-                sortedHead = sortEventsByDateDescending(head);
-                break;
+            case 0: head = sortEventsByTitle(head); break;
+            case 1: head = sortEventsByTitleDescending(head); break;
+            case 2: head = sortEventsByDate(head); break;
+            case 3: head = sortEventsByDateDescending(head); break;
             }
 
             system("cls");
@@ -149,7 +135,8 @@ void displaySortedEvents(EVENT* head, const std::string& filter) {
             if (!filter.empty())
                 std::cout << " (filtered by type: " << filter << ")";
             std::cout << ":\n";
-            EVENT* curr = sortedHead;
+
+            EVENT* curr = head;
             bool anyDisplayed = false;
             while (curr != nullptr) {
                 if (filter.empty() || curr->type == filter) {
@@ -163,6 +150,7 @@ void displaySortedEvents(EVENT* head, const std::string& filter) {
             }
             if (!anyDisplayed)
                 std::cout << "No events match the current filter.\n";
+
             std::cout << "\nPress Enter to return...";
             std::cin.ignore();
             std::cin.get();
@@ -171,8 +159,9 @@ void displaySortedEvents(EVENT* head, const std::string& filter) {
     }
 }
 
+
 void displayEvents(EVENT* head, int& userId, sqlite3* db) {
-    std::string currentFilter = ""; // Empty means no filtering (all events shown)
+    std::string currentFilter = "";
 
     system("cls");
     showEventList(head, currentFilter);
@@ -186,8 +175,7 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
         showEventList(head, currentFilter);
 
         std::cout << "\nCurrent filter: "
-            << (currentFilter.empty() ? "None" : currentFilter)
-            << "\n";
+            << (currentFilter.empty() ? "None" : currentFilter) << "\n";
         std::cout << "\nUse up/down arrows to navigate, Enter to select\n\n";
         std::cout << (currentSelection == 0 ? "> " : "  ") << "Display more info\n";
         std::cout << (currentSelection == 1 ? "> " : "  ") << "Sort events\n";
@@ -201,16 +189,9 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
         if (key == 224) {
             key = _getch();
             switch (key) {
-            case 72:
-                if (currentSelection > 0)
-                    currentSelection--;
-                break;
-            case 80:
-                if (currentSelection < 6)
-                    currentSelection++;
-                break;
-            default:
-                break;
+            case 72: if (currentSelection > 0) currentSelection--; break;
+            case 80: if (currentSelection < 6) currentSelection++; break;
+            default: break;
             }
         }
         else if (key == 13) {
@@ -218,7 +199,7 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
                 displayEventInfo(head, currentFilter);
             }
             else if (currentSelection == 1) {
-                displaySortedEvents(head, currentFilter);
+                displaySortedEvents(head, currentFilter);  
             }
             else if (currentSelection == 2) {
                 editEvent(head, userId, db);
@@ -236,7 +217,6 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
                 std::cin.get();
             }
             else if (currentSelection == 4) {
-                // Set filter type: prompt for "War" or "Revolution"
                 std::string type;
                 bool validType = false;
                 while (!validType) {
@@ -249,7 +229,7 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
                         std::cout << "Invalid type. Please enter 'War', 'Revolution', or leave empty.\n";
                     }
                 }
-                currentFilter = type; // If empty, this will show all events.
+                currentFilter = type;
             }
             else if (currentSelection == 5) {
                 currentFilter = "";
@@ -260,6 +240,7 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
         }
     }
 }
+
 
 void deleteEvent(EVENT** head, std::string& title, int userId, sqlite3* db) {
     Authentication auth(db);
