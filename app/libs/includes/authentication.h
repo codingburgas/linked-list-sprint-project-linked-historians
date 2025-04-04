@@ -1,9 +1,15 @@
 #pragma once
-
 #include "pch.h"
-#include "event.h"
 
-struct EVENT;
+struct  EVENT {
+    std::string title;
+    int dateDay;
+    int dateMonth;
+    int dateYear;
+    std::string info;
+    EVENT* next;
+    std::string type;
+};
 
 class Authentication {
 public:

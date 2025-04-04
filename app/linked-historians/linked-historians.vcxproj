@@ -105,10 +105,13 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
+      <AdditionalIncludeDirectories>$(SolutionDir)libs\includes</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(SolutionDir)libs\libs</AdditionalLibraryDirectories>
+      <AdditionalDependencies>database.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -138,7 +141,6 @@
     <ClCompile Include="sortingAlgorithms.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="authentication.h" />
     <ClInclude Include="authScreen.h" />
     <ClInclude Include="event.h" />
     <ClInclude Include="input.h" />
