@@ -13,4 +13,4 @@
 #pragma comment(lib, "winsqlite3.lib")
 
 #include <sstream>
-
+#include <cctype>
