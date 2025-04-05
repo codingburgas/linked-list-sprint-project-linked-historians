@@ -1,14 +1,23 @@
 #include "menu.h"
 #include "event.h"
 #include "searchAlgorithms.h"
+
 void displayOptions(int currentSelection) {
     system("cls");
     std::cout << "Use up/down arrows to navigate, Enter to select, 9 to Exit\n\n";
 
     std::cout << (currentSelection == 0 ? "> " : "  ") << "1. Add an event\n";
     std::cout << (currentSelection == 1 ? "> " : "  ") << "2. List all events\n";
-    std::cout << (currentSelection == 2 ? "> " : "  ") << "3. Search a text in an event\n";
     std::cout << (currentSelection == 3 ? "> " : "  ") << "9. Back to Login\n";
+}
+
+static void deleteEventList(EVENT* head) {
+    EVENT* current = head;
+    while (current != nullptr) {
+        EVENT* next = current->next;  
+        delete current;               
+        current = next;               
+    }
 }
 
 void displayMenu(int& id, Authentication& auth) {
@@ -45,4 +54,5 @@ void displayMenu(int& id, Authentication& auth) {
             return;
         }
     }
+    deleteEventList(head);
 }

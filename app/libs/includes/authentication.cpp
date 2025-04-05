@@ -1,4 +1,6 @@
+#include "pch.h"
 #include "authentication.h"
+#include "sha256.h"
 
 Authentication::Authentication() : db(nullptr) {
     std::string dbPath = "../data/database.db";
@@ -54,15 +56,16 @@ bool Authentication::createEventsTable() {
         "title TEXT NOT NULL, "
         "date TEXT NOT NULL, "
         "info TEXT NOT NULL, "
-        "type TEXT NOT NULL, "  
+        "type TEXT NOT NULL, "
         "FOREIGN KEY(user_id) REFERENCES accounts(id));";
     return executeQuery(query);
 }
 
 bool Authentication::signUp(std::string& username, std::string& password, int& userId) {
+    std::string hashedPassword = sha256(password);
     std::ostringstream query;
     query << "INSERT INTO accounts (username, password) VALUES ('"
-        << username << "', '" << password << "');";
+        << username << "', '" << hashedPassword << "');";
 
     if (!executeQuery(query.str())) {
         return false;
@@ -73,9 +76,10 @@ bool Authentication::signUp(std::string& username, std::string& password, int& u
 }
 
 bool Authentication::logIn(std::string& username, std::string& password, int& userId) {
+    std::string hashedPassword = sha256(password);
     std::ostringstream query;
     query << "SELECT id FROM accounts WHERE username='" << username
-        << "' AND password='" << password << "';";
+        << "' AND password='" << hashedPassword << "';";
 
     sqlite3_stmt* stmt;
     if (sqlite3_prepare_v2(db, query.str().c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
@@ -117,7 +121,7 @@ bool Authentication::fetchEvents(int userId, EVENT** head) {
         std::string dateStr = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
         formatDate(dateStr, newEvent);
         newEvent->info = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
-        newEvent->type = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3)); 
+        newEvent->type = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
         newEvent->next = nullptr;
 
         if (*head == nullptr) {
@@ -150,7 +154,7 @@ bool Authentication::updateEvent(int userId, const std::string& oldTitle,
     query << "UPDATE events SET title = '" << newTitle
         << "', date = '" << newDate
         << "', info = '" << newInfo
-        << "', type = '" << newType  
+        << "', type = '" << newType
         << "' WHERE user_id = " << userId
         << " AND title = '" << oldTitle << "';";
 
@@ -164,9 +168,9 @@ void formatDate(const std::string& dateStr, EVENT* event) {
     int day, month, year;
 
     if (ss >> day >> delimiter >> month >> delimiter >> year) {
-		event->dateDay = day;
-		event->dateMonth = month;
-		event->dateYear = year;
+        event->dateDay = day;
+        event->dateMonth = month;
+        event->dateYear = year;
     }
     else {
         std::cout << "Invalid date format: " << dateStr << std::endl;
