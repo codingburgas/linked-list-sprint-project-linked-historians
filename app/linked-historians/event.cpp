@@ -261,15 +261,17 @@ void editEvent(EVENT* head, int userId, sqlite3* db) {
                 newInfo = event->info;
             }
 
-            while (!utilities::isValidType(newType)) {
-                std::cout << "Enter new type (War or Revolution, leave empty to keep current): ";
-                std::getline(std::cin, newType);
-                if (newType.empty()) {
-                    newType = event->type;
-                    break;
-                }
-                else if (!utilities::isValidType(newType)) {
-                    std::cout << "Invalid type. Please enter 'War' or 'Revolution'.\n";
+            if (!utilities::getValidInput("Enter new type (War or Revolution, leave empty to keep current)", newType) || newType.empty()) {
+                newType = event->type;
+            }
+            else {
+                while (!utilities::isValidType(newType)) {
+                    std::cout << "Invalid type. Please enter 'War' or 'Revolution', or leave empty to keep current: ";
+                    std::getline(std::cin, newType);
+                    if (newType.empty()) {
+                        newType = event->type;
+                        break;
+                    }
                 }
             }
 
