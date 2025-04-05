@@ -3,7 +3,7 @@
 #include "authentication.h"
 
 namespace utilities {
-
+    std::string chooseEventType();
     bool getValidInput(const std::string& prompt, std::string& input);
     bool isEmpty(const std::string& str);
     bool isValidDateFormat(const std::string& date);

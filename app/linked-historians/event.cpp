@@ -15,7 +15,7 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
         count++;
     }
 
-    std::string title, date, info, type;
+    std::string title, date, info;
 
     while (!utilities::getValidInput("Enter Title", title))
         std::cout << "Error: Title cannot be empty.\n";
@@ -24,17 +24,7 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
     while (!utilities::getValidInput("Enter Info", info))
         std::cout << "Error: Info cannot be empty.\n";
 
-    bool validType = false;
-    while (!validType) {
-        while (!utilities::getValidInput("Enter Type (War or Revolution)", type))
-            std::cout << "Error: Type cannot be empty.\n";
-        if (utilities::isValidType(type)) {
-            validType = true;
-        }
-        else {
-            std::cout << "Error: Type must be either 'War' or 'Revolution'.\n";
-        }
-    }
+    std::string type = utilities::chooseEventType();
 
     Authentication auth(db);
     bool success = auth.addEvent(userId, title, date, info, type);
@@ -90,7 +80,7 @@ void displaySortedEvents(EVENT*& head, const std::string& typeFilter, const std:
             }
         }
         else if (key == 13) {
-            if (sortSelection == 4) return; 
+            if (sortSelection == 4) return;
 
             switch (sortSelection) {
             case 0: head = sortEventsByTitle(head); break;
@@ -172,12 +162,12 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
                 deleteEvent(&head, title, userId, db);
                 utilities::waitForEnter();
             }
-            else if (currentSelection == 4) { 
+            else if (currentSelection == 4) {
                 std::string type;
                 std::cout << "\nEnter filter type (War or Revolution, leave empty for no filter): ";
                 std::getline(std::cin, type);
-                if (utilities::isValidType(type)) {
-                    currentTypeFilter = type; 
+                if (type.empty() || utilities::isValidType(type)) {
+                    currentTypeFilter = type;
                 }
                 else {
                     std::cout << "Invalid type. Please enter 'War', 'Revolution', or leave empty.\n";
@@ -189,27 +179,27 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
                 std::string name;
                 std::cout << "\nEnter name filter (string to search in titles, leave empty for no filter): ";
                 std::getline(std::cin, name);
-                currentNameFilter = name; 
+                currentNameFilter = name;
             }
-            else if (currentSelection == 6) { 
+            else if (currentSelection == 6) {
                 std::string date;
                 std::cout << "\nEnter date filter (DD/MM/YYYY, leave empty for no filter): ";
                 std::getline(std::cin, date);
                 if (date.empty() || utilities::isValidDateFormat(date)) {
-                    currentDateFilter = date; 
+                    currentDateFilter = date;
                 }
                 else {
                     std::cout << "Invalid date format. Please use DD/MM/YYYY.\n";
                     utilities::waitForEnter();
-                    continue; 
+                    continue;
                 }
             }
-            else if (currentSelection == 7) { 
+            else if (currentSelection == 7) {
                 currentTypeFilter = "";
                 currentNameFilter = "";
                 currentDateFilter = "";
             }
-            else if (currentSelection == 8) { 
+            else if (currentSelection == 8) {
                 break;
             }
         }
@@ -261,18 +251,13 @@ void editEvent(EVENT* head, int userId, sqlite3* db) {
                 newInfo = event->info;
             }
 
-            if (!utilities::getValidInput("Enter new type (War or Revolution, leave empty to keep current)", newType) || newType.empty()) {
+            std::cout << "Press ENTER to keep current type (" << event->type << ") or any other key to change it.\n";
+            int key = _getch();
+            if (key == 13) {  
                 newType = event->type;
             }
             else {
-                while (!utilities::isValidType(newType)) {
-                    std::cout << "Invalid type. Please enter 'War' or 'Revolution', or leave empty to keep current: ";
-                    std::getline(std::cin, newType);
-                    if (newType.empty()) {
-                        newType = event->type;
-                        break;
-                    }
-                }
+                newType = utilities::chooseEventType();
             }
 
             if (auth.updateEvent(userId, event->title, newTitle, newDate, newInfo, newType)) {

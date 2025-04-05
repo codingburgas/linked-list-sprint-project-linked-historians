@@ -3,6 +3,34 @@
 
 namespace utilities {
 
+    std::string chooseEventType() {
+        int selection = 0;
+        while (true) {
+            utilities::clearScreen();
+            std::cout << "Choose Event Type:\n";
+            std::cout << (selection == 0 ? "> War\n" : "  War\n");
+            std::cout << (selection == 1 ? "> Revolution\n" : "  Revolution\n");
+
+            int key = _getch();
+            if (key == 224) {
+                key = _getch();
+                switch (key) {
+                case 72:
+                    if (selection > 0)
+                        selection--;
+                    break;
+                case 80:
+                    if (selection < 1)
+                        selection++;
+                    break;
+                }
+            }
+            else if (key == 13) {
+                return (selection == 0 ? "War" : "Revolution");
+            }
+        }
+    }
+
     bool getValidInput(const std::string& prompt, std::string& input) {
         std::cout << prompt << ": ";
         std::getline(std::cin, input);
