@@ -1,6 +1,8 @@
 #include "menu.h"
 #include "event.h"
 #include "searchAlgorithms.h"
+#include "utilities.h"
+#include "authentication.h"
 
 void displayOptions(int currentSelection) {
     system("cls");
@@ -8,7 +10,7 @@ void displayOptions(int currentSelection) {
 
     std::cout << (currentSelection == 0 ? "> " : "  ") << "1. Add an event\n";
     std::cout << (currentSelection == 1 ? "> " : "  ") << "2. List all events\n";
-    std::cout << (currentSelection == 3 ? "> " : "  ") << "9. Back to Login\n";
+    std::cout << (currentSelection == 2 ? "> " : "  ") << "9. Back to Login\n";
 }
 
 static void deleteEventList(EVENT* head) {
@@ -38,21 +40,34 @@ void displayMenu(int& id, Authentication& auth) {
                 if (currentSelection > 0) currentSelection--;
                 break;
             case 80: 
-                if (currentSelection < 3) currentSelection++;
+                if (currentSelection < 2) currentSelection++;
                 break;
             }
         }
         else if (key == 13) { 
             switch (currentSelection) {
             case 0: addEvent(&head, id, auth.getDb()); break;
-            case 1: displayEvents(head, id, auth.getDb()); break;
+            case 1: 
+                if (head == nullptr || head == reinterpret_cast<EVENT*>(0xFFFFFFFFFFFFFFE7)) {
+                    std::cout << "No events available.\n";
+                    utilities::waitForEnter();
+                    break;
+                }
+                else {
+                    
+                    auth.fetchEvents(id, &head);
+                    displayEvents(head, id, auth.getDb());
+                    break;
+                }
             //case 2: searchInEvent(head, s); break;
-            case 3: return;
+            case 2: return;
             }
         }
         else if (key == '9') { 
             return;
         }
     }
-    deleteEventList(head);
+    if (head != nullptr) {
+        deleteEventList(head);
+    }
 }

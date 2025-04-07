@@ -117,7 +117,6 @@ void displaySortedEvents(EVENT*& head, const std::string& typeFilter, const std:
         }
     }
 
-
 void displayEvents(EVENT* head, int& userId, sqlite3* db) {
     std::string currentTypeFilter = "";
     std::string currentNameFilter = "";
@@ -149,6 +148,7 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
             case 80: if (currentSelection < 9) currentSelection++; break;
             }
         }
+
         else if (key == 13) {
             if (currentSelection == 0) {
                 displayEventInfo(head, currentTypeFilter, currentNameFilter, currentDateFilter);
@@ -156,7 +156,6 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
             else if (currentSelection == 1) {
                 displaySortedEvents(head, currentTypeFilter, currentNameFilter, currentDateFilter);
             }
-           
             else if (currentSelection == 2) {
                 editEvent(head, userId, db);
                 utilities::waitForEnter();
@@ -206,12 +205,12 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
                 currentDateFilter = "";
             }
             else if (currentSelection == 8) {
-                std::cout << "\nEnter the title of the event to delete: ";
-                searchInEvent(head, searchKeyword); // Directly call the function with searchKeyword
+                std::cout << "\nEnter a word to search for: ";
+                std::getline(std::cin, searchKeyword);
+                searchInEvent(head, searchKeyword);
                 utilities::waitForEnter();
             }
-            else if (currentSelection == 9)
-            {
+            else if (currentSelection == 9) {
                 break;
             }
         }
@@ -239,6 +238,7 @@ void deleteEvent(EVENT** head, std::string& title, int userId, sqlite3* db) {
     if (temp == nullptr) return;
     prev->next = temp->next;
     delete temp;
+    auth.fetchEvents(userId, head);
 }
 
 void editEvent(EVENT* head, int userId, sqlite3* db) {
@@ -306,7 +306,6 @@ void searchInEvent(EVENT* head, const std::string& searchKeyword) {
     }
 
     list = head;
-    std::cout << "\nEnter the name of the event to view details: ";
     std::string eventTitle;
     std::getline(std::cin, eventTitle);
 
