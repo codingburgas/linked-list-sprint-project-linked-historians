@@ -3,6 +3,7 @@
 #include "sortingAlgorithms.h"
 #include "utilities.h"
 
+
 void addEventToFront(EVENT** head, EVENT* newEvent) {
     newEvent->next = *head;
     *head = newEvent;
@@ -64,7 +65,6 @@ void displayEventInfo(EVENT* head, const std::string& typeFilter, const std::str
 
 void displaySortedEvents(EVENT*& head, const std::string& typeFilter, const std::string& nameFilter, const std::string& dateFilter) {
     utilities::clearScreen();
-
     int sortSelection = 0;
     while (true) {
         utilities::clearScreen();
@@ -90,6 +90,10 @@ void displaySortedEvents(EVENT*& head, const std::string& typeFilter, const std:
             }
 
             utilities::clearScreen();
+            utilities::showFilteredEventList(head, typeFilter, nameFilter, dateFilter);
+            utilities::waitForEnter();
+        }
+    
             std::cout << "Sorted events";
             if (!typeFilter.empty()) std::cout << " (filtered by type: " << typeFilter << ")";
             if (!nameFilter.empty()) std::cout << " (filtered by name: " << nameFilter << ")";
@@ -112,13 +116,14 @@ void displaySortedEvents(EVENT*& head, const std::string& typeFilter, const std:
             return;
         }
     }
-}
+
 
 void displayEvents(EVENT* head, int& userId, sqlite3* db) {
     std::string currentTypeFilter = "";
     std::string currentNameFilter = "";
     std::string currentDateFilter = "";
-
+    
+    std::string searchKeyword = "";
     utilities::clearScreen();
     utilities::showFilteredEventList(head, currentTypeFilter, currentNameFilter, currentDateFilter);
     utilities::waitForEnter();
@@ -141,7 +146,7 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
             key = _getch();
             switch (key) {
             case 72: if (currentSelection > 0) currentSelection--; break;
-            case 80: if (currentSelection < 8) currentSelection++; break;
+            case 80: if (currentSelection < 9) currentSelection++; break;
             }
         }
         else if (key == 13) {
@@ -151,6 +156,7 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
             else if (currentSelection == 1) {
                 displaySortedEvents(head, currentTypeFilter, currentNameFilter, currentDateFilter);
             }
+           
             else if (currentSelection == 2) {
                 editEvent(head, userId, db);
                 utilities::waitForEnter();
@@ -200,6 +206,12 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
                 currentDateFilter = "";
             }
             else if (currentSelection == 8) {
+                std::cout << "\nEnter the title of the event to delete: ";
+                searchInEvent(head, searchKeyword); // Directly call the function with searchKeyword
+                utilities::waitForEnter();
+            }
+            else if (currentSelection == 9)
+            {
                 break;
             }
         }
@@ -276,4 +288,51 @@ void editEvent(EVENT* head, int userId, sqlite3* db) {
     }
 
     std::cout << "Event not found.\n";
+}
+void searchInEvent(EVENT* head, const std::string& searchKeyword) {
+    EVENT* list = head;
+    bool eventFound = false;
+    bool keywordFound = false;
+
+    std::cout << "Available events: \n";
+    if (list == nullptr) {
+        std::cout << "No historical events recorded.\n";
+        return;
+    }
+
+    while (list != nullptr) {
+        std::cout << "- " << list->title << "\n";
+        list = list->next;
+    }
+
+    list = head;
+    std::cout << "\nEnter the name of the event to view details: ";
+    std::string eventTitle;
+    std::getline(std::cin, eventTitle);
+
+    while (list != nullptr) {
+        if (list->title == eventTitle) {
+            eventFound = true;
+            std::cout << "\nEnter a keyword to search in the info: ";
+            std::string keyword;
+            std::getline(std::cin, keyword);
+
+            if (containsSubstring(list->info, keyword)) {
+                std::cout << "Keyword found in the event info!\n";
+                std::cout << "Info: " << list->info << "\n";
+                keywordFound = true;
+            }
+            else {
+                std::cout << "Keyword not found in the event's info.\n";
+            }
+            break;
+        }
+        list = list->next;
+    }
+
+    if (!eventFound) {
+        std::cout << "Event not found.\n";
+    }
+
+    std::cin.get();
 }

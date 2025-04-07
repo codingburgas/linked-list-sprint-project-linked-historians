@@ -12,7 +12,7 @@ bool containsSubstring(const std::string& str, const std::string& substring) {
     return strLower.find(substringLower) != std::string::npos;
 }
 
-void searchInEvent(EVENT* head, const std::string& searchKeyword) {
+/*void searchInEvent(EVENT* head, const std::string& searchKeyword) {
     EVENT* list = head;
     bool eventFound = false;
     bool keywordFound = false;
@@ -65,4 +65,4 @@ void searchInEvent(EVENT* head, const std::string& searchKeyword) {
         std::cout << "Event not found.\n";
     }
 
-}
+}*/

@@ -23,7 +23,7 @@ static void deleteEventList(EVENT* head) {
 void displayMenu(int& id, Authentication& auth) {
     system("cls");
     EVENT* head = nullptr;
-    std::string s;
+    //std::string s;
     auth.fetchEvents(id,&head);
 
     int currentSelection = 0;
@@ -46,7 +46,7 @@ void displayMenu(int& id, Authentication& auth) {
             switch (currentSelection) {
             case 0: addEvent(&head, id, auth.getDb()); break;
             case 1: displayEvents(head, id, auth.getDb()); break;
-            case 2: searchInEvent(head, s); break;
+            //case 2: searchInEvent(head, s); break;
             case 3: return;
             }
         }

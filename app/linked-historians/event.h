@@ -14,3 +14,4 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db);
 
 void deleteEvent(EVENT** head, std::string& title, int userId, sqlite3* db);
 void editEvent(EVENT* head, int userId, sqlite3* db);
+void searchInEvent(EVENT* head, const std::string& searchKeyword);
