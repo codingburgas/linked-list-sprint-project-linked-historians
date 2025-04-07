@@ -8,8 +8,8 @@
 namespace utilities {
 
     std::string chooseEventType() {
-        const std::string options[] = { "War", "Revolution", "Battle", "Treaty", "Discovery" };
-        int count = 5;
+        const std::string options[] = { "War", "Revolution", "Battle", "Treaty", "Discovery", "Conference", "Festival", "Coronation", "Accident" };
+        int count = 9;
         int selection = 0;
         while (true) {
             clearScreen();
@@ -106,7 +106,9 @@ namespace utilities {
     }
 
     bool isValidType(const std::string& type) {
-        return type.empty() || type == "War" || type == "Revolution" || type == "Battle" || type == "Treaty" || type == "Discovery";
+        return type.empty() || type == "War" || type == "Revolution" || type == "Battle" ||
+            type == "Treaty" || type == "Discovery" || type == "Conference" ||
+            type == "Festival" || type == "Coronation" || type == "Accident";
     }
 
     bool containsString(const std::string& str, const std::string& substr) {
