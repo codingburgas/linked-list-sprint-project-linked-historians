@@ -46,7 +46,7 @@ namespace utilities {
                 continue;
             }
             if (!isValidDateFormat(date)) {
-                std::cout << "Invalid date. Please enter date in DD/MM/YYYY format and not later than 07/04/2025.\n";
+                std::cout << "Invalid date format. Please enter date in DD/MM/YYYY format (1/1/1 - 7/4/2025).\n";
                 continue;
             }
             return true;
@@ -58,21 +58,34 @@ namespace utilities {
     }
 
     bool isValidDateFormat(const std::string& date) {
-        if (date.size() != 10)
+        size_t firstSlash = date.find('/');
+        if (firstSlash == std::string::npos)
             return false;
-        if (date[2] != '/' || date[5] != '/')
+        size_t secondSlash = date.find('/', firstSlash + 1);
+        if (secondSlash == std::string::npos)
             return false;
-        std::string dayStr = date.substr(0, 2);
-        std::string monthStr = date.substr(3, 2);
-        std::string yearStr = date.substr(6, 4);
+
+        std::string dayStr = date.substr(0, firstSlash);
+        std::string monthStr = date.substr(firstSlash + 1, secondSlash - firstSlash - 1);
+        std::string yearStr = date.substr(secondSlash + 1);
+
+        if (dayStr.empty() || dayStr.size() > 2)
+            return false;
+        if (monthStr.empty() || monthStr.size() > 2)
+            return false;
+        if (yearStr.empty() || yearStr.size() > 4)
+            return false;
+
         if (!std::all_of(dayStr.begin(), dayStr.end(), ::isdigit) ||
             !std::all_of(monthStr.begin(), monthStr.end(), ::isdigit) ||
             !std::all_of(yearStr.begin(), yearStr.end(), ::isdigit))
             return false;
+
         int day = std::stoi(dayStr);
         int month = std::stoi(monthStr);
         int year = std::stoi(yearStr);
-        if (day <= 0 || month <= 0 || year <= 0)
+
+        if (day <= 0 || month <= 0 || year < 0)
             return false;
         const int maxYear = 2025;
         const int maxMonth = 4;
@@ -100,8 +113,9 @@ namespace utilities {
         default:
             daysInMonth = 31;
         }
-        if (day < 1 || day > daysInMonth)
+        if (day > daysInMonth)
             return false;
+
         return true;
     }
 
@@ -131,7 +145,7 @@ namespace utilities {
     }
 
     void waitForEnter() {
-        std::cout << "\nPress Enter to continue...";
+        std::cout << "\nPress ENTER to continue...";
         std::cin.ignore();
         std::cin.get();
     }

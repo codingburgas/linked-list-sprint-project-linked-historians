@@ -123,7 +123,7 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
         std::cout << "Type: " << (currentTypeFilter.empty() ? "None" : currentTypeFilter) << "\n";
         std::cout << "Name: " << (currentNameFilter.empty() ? "None" : currentNameFilter) << "\n";
         std::cout << "Date: " << (currentDateFilter.empty() ? "None" : currentDateFilter) << "\n";
-        std::cout << "\nUse up/down arrows to navigate, Enter to select\n\n";
+        std::cout << "\nUse UP/DOWN arrows to navigate, Enter to select\n\n";
         utilities::displayEventsMenu(currentSelection);
         int key = _getch();
         if (key == 224) {
@@ -153,7 +153,7 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
             }
             else if (currentSelection == 4) {
                 std::string type;
-                std::cout << "\nEnter filter type (War, Revolution, Battle, Treaty, Discovery; leave empty for no filter): ";
+                std::cout << "\nEnter filter type (War, Revolution, Battle, Treaty, Discovery, Conference, Festival, Coronation, Accident or leave empty for no filter): ";
                 std::getline(std::cin, type);
                 if (type.empty() || utilities::isValidType(type)) {
                     currentTypeFilter = type;
