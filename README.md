@@ -32,7 +32,7 @@
 <h2 align="left">📄📎 Documents</h2><br>
   <ul>
     <li><a href="./Documentation/LinkedHistoriansDocumentation.docx">Documentation</a></li>
-    <li><a href="https://codingburgas-my.sharepoint.com/:p:/g/personal/zvyankova22_codingburgas_bg/EXr3oUeHF5lOnDH57ftL-L0Br51hFpeTVO5I-YrBEPZEIA?e=SRkjde">Presentation</a></li>
+    <li><a href="./Documentation/LinkedHistoriansPresentation.pptx">Presentation</a></li>
   </ul>  
 
 <h2 align="left">👨🏻‍💻 Team Members </h2>
