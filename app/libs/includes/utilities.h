@@ -1,7 +1,5 @@
 #pragma once
-#include "pch.h"
 #include "authentication.h"
-#include "event.h"
 #include <string>
 
 namespace utilities {
