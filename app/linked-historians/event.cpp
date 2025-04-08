@@ -3,15 +3,14 @@
 #include "sortingAlgorithms.h"
 #include "utilities.h"
 #include "utilities.cpp"
-#include <iostream>
-#include <string>
-#include <conio.h>
 
+// Add an event to the start of the linked list
 void addEventToFront(EVENT** head, EVENT* newEvent) {
     newEvent->next = *head;
     *head = newEvent;
 }
 
+// Function to add a new event
 void addEvent(EVENT** head, int& userId, sqlite3* db) {
     static int count = 0;
     if (count == 0) {
@@ -36,6 +35,7 @@ void addEvent(EVENT** head, int& userId, sqlite3* db) {
     addEventToFront(head, newEventObj);
 }
 
+// Function to display the full information about a specific event
 void displayEventInfo(EVENT* head, const std::string& typeFilter, const std::string& nameFilter, const std::string& dateFilter) {
     utilities::clearScreen();
     std::string searchTitle;
@@ -58,6 +58,7 @@ void displayEventInfo(EVENT* head, const std::string& typeFilter, const std::str
     utilities::waitForEnter();
 }
 
+// Function to display events sorted by various criteria
 void displaySortedEvents(EVENT*& head, const std::string& typeFilter, const std::string& nameFilter, const std::string& dateFilter) {
     utilities::clearScreen();
     int sortSelection = 0;
@@ -107,6 +108,7 @@ void displaySortedEvents(EVENT*& head, const std::string& typeFilter, const std:
     }
 }
 
+// Display all events with the menu for filtering and navigation options
 void displayEvents(EVENT* head, int& userId, sqlite3* db) {
     std::string currentTypeFilter = "";
     std::string currentNameFilter = "";
@@ -189,18 +191,14 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
                 currentDateFilter = "";
             }
             else if (currentSelection == 8) {
-                std::cout << "\nEnter a word to search for: ";
-                std::getline(std::cin, searchKeyword);
-                searchInEvent(head, searchKeyword);
-                utilities::waitForEnter();
-            }
-            else if (currentSelection == 9) {
                 break;
             }
+            
         }
     }
 }
 
+// Function to delete an event
 void deleteEvent(EVENT** head, std::string& title, int userId, sqlite3* db) {
     Authentication auth(db);
     if (!auth.deleteEvent(userId, title)) {
@@ -224,6 +222,7 @@ void deleteEvent(EVENT** head, std::string& title, int userId, sqlite3* db) {
     auth.fetchEvents(userId, head);
 }
 
+// Function to edit an existing event by its title
 void editEvent(EVENT* head, int userId, sqlite3* db) {
     std::cout << "Enter the title of the event you want to edit: ";
     std::string title;
@@ -267,6 +266,7 @@ void editEvent(EVENT* head, int userId, sqlite3* db) {
     std::cout << "Event not found.\n";
 }
 
+// Function to search for a keyword in an event's information
 void searchInEvent(EVENT* head, const std::string& searchKeyword) {
     EVENT* list = head;
     bool eventFound = false;
