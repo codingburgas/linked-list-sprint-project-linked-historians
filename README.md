@@ -7,6 +7,7 @@
 <img alt="GitHub contributors" src="https://img.shields.io/github/contributors/codingburgas/linked-list-sprint-project-linked-historians">
 <img alt="GitHub last commit" src="https://img.shields.io/github/last-commit/codingburgas/linked-list-sprint-project-linked-historians">
 </p>
+<img align="left" src="./Documentation/logo-nobg.png" width=270px height=270px>
 <br>
 <br>
 <p>👋 Hello, we are Linked Historians!</p>
@@ -14,7 +15,7 @@
 <br>
 <br>
 <br>
-<h2 align="left">🚀🗂 Languages and Libraries </h2>
+<h2 align="left">🚀🗂 Languages</h2>
 <p align="left">
 <a href="https://www.cplusplus.com/"><img src="https://img.icons8.com/color/48/000000/c-plus-plus-logo.png" alt="C++"></a></p>
 
