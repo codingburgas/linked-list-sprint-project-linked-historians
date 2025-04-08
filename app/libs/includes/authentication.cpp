@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "authentication.h"
 #include "sha256.h"
 
@@ -84,25 +83,26 @@ bool Authentication::signUp(std::string& username, std::string& password, int& u
 }
 
 // Logs in a user by verifying their username and hashed password against the "accounts" table.
-bool Authentication::signUp(std::string& username, std::string& password, int& userId) {
+bool Authentication::logIn(std::string& username, std::string& password, int& userId) {
     std::string hashedPassword = sha256(password);
     std::ostringstream query;
-    query << "INSERT INTO accounts (username, password) VALUES ('"
-        << username << "', '" << hashedPassword << "');";
+    query << "SELECT id FROM accounts WHERE username='" << username
+        << "' AND password='" << hashedPassword << "';";
 
-    char* errMsg = nullptr;
-    if (sqlite3_exec(db, query.str().c_str(), nullptr, nullptr, &errMsg) != SQLITE_OK) {
-        if (sqlite3_errcode(db) == SQLITE_CONSTRAINT) {
-            std::cout << "Error: Username already exists." << std::endl;
-        } else {
-            std::cout << "Error executing query: " << errMsg << std::endl;
-        }
-        sqlite3_free(errMsg);
+    sqlite3_stmt* stmt;
+    if (sqlite3_prepare_v2(db, query.str().c_str(), -1, &stmt, nullptr) != SQLITE_OK) {
+        std::cout << "Error preparing statement: " << sqlite3_errmsg(db) << std::endl;
         return false;
     }
 
-    userId = static_cast<int>(sqlite3_last_insert_rowid(db));
-    return true;
+    bool success = false;
+    if (sqlite3_step(stmt) == SQLITE_ROW) {
+        userId = sqlite3_column_int(stmt, 0);
+        success = true;
+    }
+
+    sqlite3_finalize(stmt);
+    return success;
 }
 
 // Adds a new event to the events table for the user with given id

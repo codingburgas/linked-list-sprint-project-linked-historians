@@ -31,7 +31,7 @@ public:
     Authentication();
     Authentication(sqlite3* db);
     ~Authentication();
-
+    bool executeQuery(const std::string& query);
     bool createTable();
     bool createEventsTable();
     bool signUp(std::string& username, std::string& password, int& userId);
@@ -49,7 +49,6 @@ public:
 
 private:
     sqlite3* db;
-    bool executeQuery(const std::string& query);
     bool executePreparedStatement(const std::string& query, sqlite3_stmt** stmt);
 };
 

@@ -17,12 +17,15 @@ void changeColor()
     int textWidth = text.length() + 19;
     int padding = (consoleWidth - textWidth) / 2;
 
+
     SetConsoleTextAttribute(h, 15);
     std::cout << std::setw(padding) << "";
-    for (int i = 0; i < textWidth; i++) {
+    for (int i = 0; i < textWidth; i++)
+    {
         std::cout << "-";
     }
     std::cout << "\n";
+
 
     std::cout << std::setw(padding) << "";
     SetConsoleTextAttribute(h, 11);
@@ -30,11 +33,13 @@ void changeColor()
     SetConsoleTextAttribute(h, 15);
     std::cout << std::setw(padding) << "" << std::endl;
 
+
     std::cout << std::setw(padding) << " ";
     for (int i = 0; i < textWidth; i++) {
         std::cout << "-";
     }
     std::cout << "\n";
+
 
     SetConsoleTextAttribute(h, 14);
     std::cout << "\n";
@@ -63,15 +68,15 @@ void AuthScreen::displayAuthMenu() {
         if (choice == 224) {
             choice = _getch();
             switch (choice) {
-            case 72: 
+            case 72:
                 if (currentSelection > 0) currentSelection--;
                 break;
-            case 80: 
+            case 80:
                 if (currentSelection < 2) currentSelection++;
                 break;
             }
         }
-        else if (choice == 13) { 
+        else if (choice == 13) {
             switch (currentSelection) {
             case 0: handleSignUp(); break;
             case 1: handleLogIn(); break;

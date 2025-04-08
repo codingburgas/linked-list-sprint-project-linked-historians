@@ -3,6 +3,9 @@
 #include "sortingAlgorithms.h"
 #include "utilities.h"
 #include "utilities.cpp"
+#include <iostream>
+#include <string>
+#include <conio.h>
 
 // Add an event to the start of the linked list
 void addEventToFront(EVENT** head, EVENT* newEvent) {
@@ -191,9 +194,14 @@ void displayEvents(EVENT* head, int& userId, sqlite3* db) {
                 currentDateFilter = "";
             }
             else if (currentSelection == 8) {
+                std::cout << "\nEnter a word to search for: ";
+                std::getline(std::cin, searchKeyword);
+                searchInEvent(head, searchKeyword);
+                utilities::waitForEnter();
+            }
+            else if (currentSelection == 9) {
                 break;
             }
-            
         }
     }
 }
