@@ -1,13 +1,14 @@
 #include "authScreen.h"
 #include "menu.h"
 
-
+// Calls the functions to initialize the database
 AuthScreen::AuthScreen() {
     if (!auth.createTable() || !auth.createEventsTable()) {
         std::cerr << "Failed to initialize the database.\n";
     }
 }
 
+// Function to display the name of the team  with colored letters
 void changeColor()
 {
     HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -16,15 +17,12 @@ void changeColor()
     int textWidth = text.length() + 19;
     int padding = (consoleWidth - textWidth) / 2;
 
-
     SetConsoleTextAttribute(h, 15);
     std::cout << std::setw(padding) << "";
-    for (int i = 0; i < textWidth; i++)
-    {
+    for (int i = 0; i < textWidth; i++) {
         std::cout << "-";
     }
     std::cout << "\n";
-
 
     std::cout << std::setw(padding) << "";
     SetConsoleTextAttribute(h, 11);
@@ -32,18 +30,17 @@ void changeColor()
     SetConsoleTextAttribute(h, 15);
     std::cout << std::setw(padding) << "" << std::endl;
 
-
     std::cout << std::setw(padding) << " ";
     for (int i = 0; i < textWidth; i++) {
         std::cout << "-";
     }
     std::cout << "\n";
 
-
     SetConsoleTextAttribute(h, 14);
     std::cout << "\n";
 }
 
+// Function to display the options in the authScreen
 void AuthScreen::displayLoginOptions(int currentSelection) {
     std::cout << "Use UP/DOWN arrows to navigate, ENTER to select\n\n";
 
@@ -52,6 +49,7 @@ void AuthScreen::displayLoginOptions(int currentSelection) {
     std::cout << (currentSelection == 2 ? "> " : "  ") << "3. Exit\n";
 }
 
+// Function to allow users to navigate and select options
 void AuthScreen::displayAuthMenu() {
     int choice;
     int currentSelection = 0;
@@ -65,15 +63,15 @@ void AuthScreen::displayAuthMenu() {
         if (choice == 224) {
             choice = _getch();
             switch (choice) {
-            case 72:
+            case 72: 
                 if (currentSelection > 0) currentSelection--;
                 break;
-            case 80:
+            case 80: 
                 if (currentSelection < 2) currentSelection++;
                 break;
             }
         }
-        else if (choice == 13) {
+        else if (choice == 13) { 
             switch (currentSelection) {
             case 0: handleSignUp(); break;
             case 1: handleLogIn(); break;
@@ -83,6 +81,7 @@ void AuthScreen::displayAuthMenu() {
     } while (choice != '3');
 }
 
+// Function to handle the sign-up process
 void AuthScreen::handleSignUp() {
     std::string username, password;
     int userId;
@@ -112,6 +111,7 @@ void AuthScreen::handleSignUp() {
     }
 }
 
+// Function to handle the login process
 void AuthScreen::handleLogIn() {
     std::string username, password;
     int userId;
