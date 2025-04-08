@@ -1,4 +1,3 @@
-#include "pch.h"
 #include "authentication.h"
 #include "sha256.h"
 
